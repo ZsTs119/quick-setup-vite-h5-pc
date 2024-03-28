@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite --mode development",
     "dev:h5": "vite --mode developmentH5",
-    "dev:pro": "vite --mode production",
-    "dev:proH5": "vite --mode productionH5",
+    "pro": "vite --mode production",
+    "proH5": "vite --mode productionH5",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
