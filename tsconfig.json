@@ -9,7 +9,6 @@
     "skipLibCheck": true,//跳过声明文件的类型检查。
     "esModuleInterop": true,//启用 ES 模块 interop 特性。 允许使用`import`语句导入 CommonJS 模块。
     "allowSyntheticDefaultImports": true,//允许从没有设置默认导出的模块中默认导入。
-    "sourceMap": true,// 生成相应的 sourcemap 文件。
     "baseUrl": ".",//设置基础目录,用于解析非相对模块名称。
     //指定要包含的类型声明文件
     "types": [
@@ -35,10 +34,13 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx"
+    "tests/**/*.tsx",
+    "src/env.d.ts" 
   ],
   //指定要排除的文件glob模式。
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "dist",                                   
+    "vite.config.ts"   
   ]
 }

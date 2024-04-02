@@ -11,7 +11,9 @@ import {
 import { visualizer } from 'rollup-plugin-visualizer'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
-
+import PurgeIcons from 'vite-plugin-purge-icons';
+import VitePluginImagemin from 'vite-plugin-imagemin';
+import viteCompression from 'vite-plugin-compression';
 export default defineConfig({
   plugins: [
     vue(), // Vue 3单文件组件支持
@@ -38,13 +40,59 @@ export default defineConfig({
     }),
     
     // 可视化打包分析工具
-    process.env.NODE_ENV === 'production' && visualizer(),
+    process.env.VITE_NODE_ENV === 'production' && visualizer({
+      open: true, // 是否在打包完成后打开报告
+      gzipSize: true, // 是否展示gzip压缩大小
+      brotliSize: false, // 是否展示brotli压缩大小
+    }),
     
     // SVG图标加载
     createSvgIconsPlugin({
       iconDirs: [path.join(__dirname, 'src/assets/icons/svg')],
       symbolId: 'icon-[name]'
-    })
+    }),
+    //PurgeIcons用于只打包项目中实际用到的SVG图标
+    PurgeIcons(),
+    //对所有静态资源做 gzip 压缩，可以在服务器支持gzip的情况下进一步减少体积
+    viteCompression({
+      ext: '.gz', // 使用gzip压缩
+    }),
+    //优化图像资源
+    process.env.VITE_NODE_ENV === 'production' && VitePluginImagemin({
+      imageminOptions: {
+        plugins: [
+          // jpeg/jpg 图片的压缩
+          ['jpegtran', { progressive: true }],
+          // png 图片的压缩
+          ['optipng', { optimizationLevel: 5 }],
+          // svg 图片的压缩
+          ['svgo', {
+            plugins: [
+              {
+                // 禁用某些 SVGO 插件
+                name: 'preset-default',
+                params: {
+                  overrides: {
+                    // 禁用已经废弃的移除viewBox属性的插件
+                    removeViewBox: false,
+                    // 启用移除无用 stroke 和 fill 属性的插件
+                    removeUselessStrokeAndFill: true,
+                    // 删除无用的 defs
+                    removeEmptyAttrs: true,
+                  },
+                },
+              },
+            ],
+          }],
+        ],
+      },
+      // 启用 WebP 图片格式的压缩可以更进一步地减少图片体积
+      // 额外的 png 和 jpg 的 WebP 图片，质量参数设置为 85
+      // webp options
+      webpOptions: {
+        quality: 85,
+      },
+    }),
   ],
   
   optimizeDeps: {
@@ -59,23 +107,34 @@ export default defineConfig({
         drop_debugger: true // 移除debugger语句
       }
     },
+    //为 vendor 代码创建单独的 chunk（不同依赖库提取到独立的文件）
     rollupOptions: {
       output: {
-        chunkFileNames: 'js/[name]-[hash].js', // 输出的chunk文件名格式
-        entryFileNames: 'js/[name]-[hash].js', // 输出的入口文件名格式
-        assetFileNames: '[ext]/[name]-[hash].[ext]', // 输出的静态资源文件名格式
-        manualChunks(id) { // 自定义拆分chunk的规则
+        manualChunks(id) {
           if (id.includes('node_modules')) {
-            return 'vendor';
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
           }
-        }
-      }
+        },
+        // 同时，你可以启用splitVendorChunk来将第三方库代码分离
+        chunkFileNames: (chunkInfo) => {
+          const name = chunkInfo.name ? chunkInfo.name : 'chunk';
+          if (chunkInfo.isEntry) {
+            return `js/${name}-[hash].js`;
+          } else if (chunkInfo.name.includes('node_modules')) {
+            return 'vendor-[hash].js';
+          } else {
+            return `js/${name}-[hash].js`;
+          }
+        },
+      },
     },
     commonjsOptions: {
       include: [/lodash-es/] // 转换CommonJS模块为ESM
     },
-    sourcemap: false, // 关闭sourcemap生成
+    //生产环境关闭sourcemap,开发环境开启sourcemap
+    sourcemap: process.env.VITE_NODE_ENV === 'development' ? true : false,
     manifest: true, // 生成manifest.json文件
+    brotliSize: false, // 关闭brotli压缩大小提示因为耗费性能
     chunkSizeWarningLimit: 500 // 设置chunk大小警告的限制(以kB为单位)
   },
   server: {

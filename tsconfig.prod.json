@@ -1,0 +1,7 @@
+//生产环境源映射tsconfig对soureMap设置
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "sourceMap": false
+  }
+}

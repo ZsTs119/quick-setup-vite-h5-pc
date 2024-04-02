@@ -8,10 +8,11 @@
     "dev:h5": "vite --mode developmentH5",
     "pro": "vite --mode production",
     "proH5": "vite --mode productionH5",
-    "build": "run-p type-check \"build-only {@}\" --",
-    "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --build --force"
+    "build:dev": "vite build --mode development && vue-tsc --skipLibCheck --p tsconfig.dev.json",
+    "build:dev:h5": "vite build --mode developmentH5 && vue-tsc --skipLibCheck --p tsconfig.dev.json",
+    "build:prod": "vite build --mode production && vue-tsc --skipLibCheck --p tsconfig.prod.json",
+    "build:prod:h5": "vite build --mode productionH5 && vue-tsc --skipLibCheck --p tsconfig.prod.json",
+    "preview": "vite preview"
   },
   "dependencies": {
     "axios": "^1.6.8",
