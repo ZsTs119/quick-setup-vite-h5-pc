@@ -35,7 +35,9 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
-    "src/env.d.ts" 
+    "env.d.ts",
+    "auto-imports.d.ts",
+    "components.d.ts"
   ],
   //指定要排除的文件glob模式。
   "exclude": [

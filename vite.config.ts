@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueSetup from "vite-plugin-vue-setup-extend"
+import { imagetools  } from 'vite-imagetools' //使用语法https://github.com/JonasKruckenberg/imagetools/tree/main/packages/core
 import AutoImport from 'unplugin-auto-import/vite' //自动导入您在代码中使用但尚未导入的 Vue 组件或 API，减少手动导入的需要。
 import Components from 'unplugin-vue-components/vite' //自动导入和注册您在 Vue 模板中使用的组件，无需手动导入它们。
 import { ElementPlusResolver ,VantResolver} from 'unplugin-vue-components/resolvers'
@@ -12,18 +13,21 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
 import PurgeIcons from 'vite-plugin-purge-icons';
-import VitePluginImagemin from 'vite-plugin-imagemin';
 import viteCompression from 'vite-plugin-compression';
+const API_BASE_URL = process.env.VITE_API_BASE_URL;
 export default defineConfig({
   plugins: [
     vue(), // Vue 3单文件组件支持
     vueSetup(), //允许在setup函数中使用name属性来指定组件的名称
     // 自动导入Vue API、Element Plus和Vant组件
     AutoImport({
+      imports: ['vue'], // 指定自动导入Vue API
+      dts: 'auto-imports.d.ts', // 自动生成的类型声明文件路径
       resolvers: [ElementPlusResolver(),VantResolver()],
     }),
      // 自动导入Vue API、Element Plus和Vant组件
     Components({
+      dts: true, // 自动生成的类型声明文件路径
       resolvers: [ElementPlusResolver(),VantResolver()], 
     }),  
     // 自动导入Element Plus和Vant组件的样式
@@ -58,43 +62,8 @@ export default defineConfig({
       ext: '.gz', // 使用gzip压缩
     }),
     //优化图像资源
-    process.env.VITE_NODE_ENV === 'production' && VitePluginImagemin({
-      imageminOptions: {
-        plugins: [
-          // jpeg/jpg 图片的压缩
-          ['jpegtran', { progressive: true }],
-          // png 图片的压缩
-          ['optipng', { optimizationLevel: 5 }],
-          // svg 图片的压缩
-          ['svgo', {
-            plugins: [
-              {
-                // 禁用某些 SVGO 插件
-                name: 'preset-default',
-                params: {
-                  overrides: {
-                    // 禁用已经废弃的移除viewBox属性的插件
-                    removeViewBox: false,
-                    // 启用移除无用 stroke 和 fill 属性的插件
-                    removeUselessStrokeAndFill: true,
-                    // 删除无用的 defs
-                    removeEmptyAttrs: true,
-                  },
-                },
-              },
-            ],
-          }],
-        ],
-      },
-      // 启用 WebP 图片格式的压缩可以更进一步地减少图片体积
-      // 额外的 png 和 jpg 的 WebP 图片，质量参数设置为 85
-      // webp options
-      webpOptions: {
-        quality: 85,
-      },
-    }),
+    process.env.VITE_NODE_ENV === 'production' && imagetools(),
   ],
-  
   optimizeDeps: {
     include: ['lodash-es'], // 预构建指定的依赖项
   },
@@ -105,7 +74,10 @@ export default defineConfig({
       compress: {
         drop_console: true, // 移除console语句
         drop_debugger: true // 移除debugger语句
-      }
+      },
+      output: {
+        comments: true, // 移除注释
+      },
     },
     //为 vendor 代码创建单独的 chunk（不同依赖库提取到独立的文件）
     rollupOptions: {
@@ -134,7 +106,7 @@ export default defineConfig({
     //生产环境关闭sourcemap,开发环境开启sourcemap
     sourcemap: process.env.VITE_NODE_ENV === 'development' ? true : false,
     manifest: true, // 生成manifest.json文件
-    brotliSize: false, // 关闭brotli压缩大小提示因为耗费性能
+    reportCompressedSize: false, // 关闭brotli压缩大小提示因为耗费性能
     chunkSizeWarningLimit: 500 // 设置chunk大小警告的限制(以kB为单位)
   },
   server: {
@@ -142,7 +114,7 @@ export default defineConfig({
     port: 3000, // 设置开发服务器端口
     open: true, // 自动打开浏览器
     proxy: {
-      [process.env.VITE_API_BASE_URL]: {
+    API_BASE_URL: {
         target: process.env.VITE_NODE_ENV === 'development' ? process.env.VITE_TEST_URL : process.env.VITE_PRO_URL,
         changeOrigin: true,
         rewrite: (path) => path.replace(new RegExp(`^${process.env.VITE_API_BASE_URL}`), '')
@@ -153,11 +125,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'), // 设置 @ 别名指向 src 目录
-    },
+      '@c': path.resolve(__dirname, 'src/components'), // 设置 @c 别名指向 src/components 目录
+      '@u': path.resolve(__dirname, 'src/utils'), // 设置 @u 别名指向 src/utils 目录
+    }
   },
   
   css: {
-     //为每个 SCSS 文件注入全局变量
+     //为每个 SCSS LESS 文件注入全局变量
     preprocessorOptions: {
       scss: {
         additionalData: `@import "@/style/variables.scss";`, // 全局 SCSS 变量
