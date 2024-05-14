@@ -22,6 +22,8 @@
     "pinia": "^2.1.7",
     "sass-loader": "^13.3.3",
     "vant": "^4.8.7",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-purge-icons": "^0.10.0",
     "vite-plugin-style-import": "^2.0.0",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0"
