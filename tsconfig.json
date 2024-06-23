@@ -26,7 +26,9 @@
       "dom",
       "dom.iterable",
       "scripthost"
-    ]
+    ],
+      "allowJs": true, // 允许编译JavaScript文件
+      "noEmit": true,// 禁止生成输出文件
   },
   //指定要编译的文件glob模式。
   "include": [

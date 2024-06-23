@@ -14,9 +14,14 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import path from 'path'
 import PurgeIcons from 'vite-plugin-purge-icons';
 import viteCompression from 'vite-plugin-compression';
+//处理默认导出的问题
+import commonjs from '@rollup/plugin-commonjs';
+import nodeResolve from '@rollup/plugin-node-resolve';
 const API_BASE_URL = process.env.VITE_API_BASE_URL;
 export default defineConfig({
   plugins: [
+    nodeResolve(), //处理默认导出
+    commonjs(), //处理默认导出
     vue(), // Vue 3单文件组件支持
     vueSetup(), //允许在setup函数中使用name属性来指定组件的名称
     // 自动导入Vue API、Element Plus和Vant组件
@@ -65,7 +70,7 @@ export default defineConfig({
     process.env.VITE_NODE_ENV === 'production' && imagetools(),
   ],
   optimizeDeps: {
-    include: ['lodash-es'], // 预构建指定的依赖项
+    include: ['lodash-es','dayjs'], // 预构建指定的依赖项
   },
   
   build: {
