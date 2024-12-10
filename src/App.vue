@@ -32,21 +32,43 @@
     <van-button type="warning">警告按钮</van-button>
     <van-switch v-model="bSwitch" />
   </div>
-
+  <div v-if="loading">Loading...</div>
+  <pre v-if="data">{{ data }}</pre>
+  <div v-if="error" style="color: red">{{ error }}</div>
 </template>
 
 <script lang="ts" setup name="App">
-import { onMounted } from "vue";
 import { showMessage } from "@/utils";
-let bSwitch = ref(true)
+import { axiosInstance } from "@/utils";
+const data = ref(null);
+const loading = ref(false);
+const error = ref(null);
+let bSwitch = ref(true);
 onMounted(() => {
   showMessage({
     content: "我是默认弹窗",
     type: "success",
     callback: function () {
-      console.log("我是完成的回调函数");
-      ElMessage('This is a message.');
+      console.log("我是完成的回调函数", import.meta.env);
+      console.log("App Version:", __APP_VERSION__);
+      ElMessage("This is a message.");
     },
   });
+  loading.value = true;
+  error.value = null;
+  try {
+    axiosInstance
+      .get("/api/script/script/getDramaAudit")
+      .then((response) => {
+        console.log("Data:", response);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  } catch (err) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
 });
 </script>
