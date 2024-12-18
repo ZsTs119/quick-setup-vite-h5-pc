@@ -1,0 +1,90 @@
+// 弹性布局
+.flex(@direction: row, @justify: center, @align: center) {
+  display: flex;
+  flex-direction: @direction;
+  justify-content: @justify;
+  align-items: @align;
+}
+
+// 绝对定位居中
+.absolute-center() {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// 文本溢出省略
+.text-ellipsis(@lines: 1) when (@lines = 1) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-ellipsis(@lines) when (@lines > 1) {
+  display: -webkit-box;
+  -webkit-line-clamp: @lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 滚动条样式
+.scrollbar(@width: 6px, @thumb-color: #909399, @track-color: #f5f7fa) {
+  &::-webkit-scrollbar {
+    width: @width;
+    height: @width;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: @thumb-color;
+    border-radius: @width / 2;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: @track-color;
+  }
+}
+
+// 清除浮动
+.clearfix() {
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+// 固定宽高比
+.aspect-ratio(@width: 1, @height: 1) {
+  position: relative;
+  &::before {
+    content: '';
+    display: block;
+    padding-top: percentage(@height / @width);
+  }
+}
+
+// 渐变背景
+.gradient(@direction: to right, @start-color: #409eff, @end-color: #337ecc) {
+  background: linear-gradient(@direction, @start-color, @end-color);
+}
+
+// 多行文本垂直居中
+.text-center(@height) {
+  height: @height;
+  line-height: @height;
+  text-align: center;
+}
+
+// 阴影效果
+.box-shadow(@level: 'normal') when (@level = 'light') {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.box-shadow(@level: 'normal') when (@level = 'normal') {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
+
+.box-shadow(@level: 'normal') when (@level = 'heavy') {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+} 

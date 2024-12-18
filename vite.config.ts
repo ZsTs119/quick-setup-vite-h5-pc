@@ -94,7 +94,7 @@ export default defineConfig(({ mode }) => {
           comments: true, // 移除注释
         },
       },
-      //为 vendor 代码创建单独的 chunk（不同依赖库提取到独立的文件）
+      //为 vendor 代码创建独的 chunk（不同依赖库提取到独立的文件）
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -126,7 +126,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000, // 设置开发服务器端口
-      open: true, // 自动打开浏览器
+      open: true, // 自动打开浏器
       proxy: {
         [API_BASE_URL]: {
           target: env.VITE_NODE_ENV === 'development' ? env.VITE_TEST_URL : env.VITE_PRO_URL,
@@ -148,11 +148,19 @@ export default defineConfig(({ mode }) => {
       //为每个 SCSS LESS 文件注入全局变量
       preprocessorOptions: {
         scss: {
-          additionalData: `@import "@/style/variables.scss";`, // 全局 SCSS 变量
+          additionalData: `
+            @import "@/styles/themes/variables.scss";
+            @import "@/styles/mixins/theme.scss";
+            @import "@/styles/mixins/common.scss";
+          `
         },
         less: {
-          additionalData: `@import "@/style/variables.less";`, // 全局 Less 变量
-        },
+          additionalData: `
+            @import "@/styles/themes/variables.less";
+            @import "@/styles/mixins/theme.less";
+            @import "@/styles/mixins/common.less";
+          `
+        }
       },
     },
   }

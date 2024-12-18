@@ -1,8 +1,8 @@
 <template>
   <div class="home-container">
     <h1>首页</h1>
-    <div class="user-info" v-if="loginStore.userInfo">
-      <p>欢迎, {{ loginStore.userInfo.username }}</p>
+    <div class="user-info" v-if="userStore.userInfo">
+      <p>欢迎, {{ userStore.userInfo.username }}</p>
       <button @click="handleLogout">退出登录</button>
     </div>
   </div>
@@ -10,13 +10,13 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import { useLoginStore } from '@/stores/login'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
-const loginStore = useLoginStore()
+const userStore = useUserStore()
 
 const handleLogout = () => {
-  loginStore.logout()
+  userStore.logout()
   router.push('/login')
 }
 </script>

@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import { useLoginStore } from '@/stores/login'
+import { useUserStore } from '@/stores/user'
 
 // 定义路由元信息类型
 interface CustomRouteMetaData {
   requiresAuth?: boolean      // 是否需要登录
-  roles?: string[]           // 允许访问的角色
   title?: string            // 页面标题
 }
 
@@ -39,7 +38,6 @@ const routes: RouteRecordRaw[] = [
     component: () => import('@/views/settings/index.vue'),
     meta: {
       requiresAuth: true,
-      roles: ['admin'],  // 只有 admin 角色可以访问
       title: '系统设置'
     }
   },
@@ -63,35 +61,22 @@ const router = createRouter({
 
 // 全局前置守卫
 router.beforeEach((to, from, next) => {
-  const loginStore = useLoginStore()
+  const userStore = useUserStore()
 
   // 设置页面标题
   document.title = to.meta.title || 'Vue App'
 
   // 检查该路由是否需要登录权限
   if (to.meta.requiresAuth) {
-    if (!loginStore.isLoggedIn) {
+    if (!userStore.isLoggedIn) {
       // 未登录，重定向到登录页
       next({
         path: '/login',
-        query: { redirect: to.fullPath } // 保存原目标路径
+        query: { redirect: to.fullPath }
       })
       return
     }
-
-    // 检查角色权限
-    if (to.meta.roles && to.meta.roles.length > 0) {
-      const userRole = loginStore.userInfo?.role
-      if (!userRole || !to.meta.roles.includes(userRole)) {
-        // 无权限访问
-        next({
-          path: '/',
-          replace: true
-        })
-        return
-      }
-    }
-  } else if (to.path === '/login' && loginStore.isLoggedIn) {
+  } else if (to.path === '/login' && userStore.isLoggedIn) {
     // 已登录用户访问登录页，重定向到首页
     next({ path: '/' })
     return

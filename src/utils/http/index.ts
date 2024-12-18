@@ -2,7 +2,9 @@ import { ElMessage } from 'element-plus'
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
 import { v4 as uuidv4 } from 'uuid'
 import { generateSignature } from '@/utils'
-import { useLoginStore } from '@/stores/login'
+import { useTokenStore } from '@/stores/token'
+import { useUserStore } from '@/stores/user'
+import router from '@/router'
 
 // 定义请求参数基础接口
 interface BaseRequestData {
@@ -51,8 +53,8 @@ axiosInstance.interceptors.request.use(
       cleanEmptyValues(data)
     }
 
-    // 获取登录信息
-    const loginStore = useLoginStore()
+    // 获取 token 信息
+    const tokenStore = useTokenStore()
     const requestData: BaseRequestData = {
       ...config.data,
       platform: 'web',
@@ -61,12 +63,11 @@ axiosInstance.interceptors.request.use(
     }
 
     // 添加认证信息
-    if (loginStore.token) {
-      const userInfo = loginStore.userInfo
+    if (tokenStore.token) {
       Object.assign(requestData, {
-        token: loginStore.token,
-        clientId: userInfo?.clientId,
-        traceId: userInfo?.traceId
+        token: tokenStore.token,
+        clientId: tokenStore.clientId,
+        traceId: tokenStore.traceId
       })
     }
 
@@ -85,8 +86,18 @@ axiosInstance.interceptors.request.use(
 // 响应拦截器
 axiosInstance.interceptors.response.use(
   <T>(response: AxiosResponse<ApiResponse<T>>) => {
-    
     const { code, result, errorMessages } = response.data
+    
+    if (code === 10001) {
+      // token 过期，清除用户信息并跳转到登录页
+      const userStore = useUserStore()
+      userStore.logout()
+      router.push({
+        path: '/login',
+        query: { redirect: router.currentRoute.value.fullPath }
+      })
+      return Promise.reject(new Error('登录已过期，请重新登录'))
+    }
     
     if (code !== 200) {
       ElMessage.error(errorMessages)

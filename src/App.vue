@@ -39,7 +39,8 @@
 
 <script lang="ts" setup name="App">
 import { showMessage } from "@/utils";
-import { axiosInstance } from "@/utils";
+import { userApi } from "@/apis";
+import { testSignaturePerformance } from "@/utils/encrypt";
 const data = ref(null);
 const loading = ref(false);
 const error = ref(null);
@@ -56,19 +57,94 @@ onMounted(() => {
   });
   loading.value = true;
   error.value = null;
-  try {
-    axiosInstance
-      .get("/api/script/script/getDramaAudit")
-      .then((response) => {
-        console.log("Data:", response);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-      });
-  } catch (err) {
-    error.value = err.message;
-  } finally {
-    loading.value = false;
-  }
+  // 测试单个对象
+  const testParams = {
+    name: "test",
+    age: 18,
+    items: [1, 2, 3],
+    nested: {
+      a: 1,
+      b: 2,
+    },
+    arrayObj: [
+      {
+        a: 22,
+        b: [
+          {
+            c: 1121,
+          },
+          {
+            c: 1121,
+          },
+          {
+            c: 1211,
+          },
+          {
+            c: 1121,
+          },
+          {
+            c: 1121,
+          },
+        ],
+      },
+      {
+        a: 222,
+        b: [
+          {
+            c: 12211,
+          },
+          {
+            c: 11221,
+          },
+          {
+            c: 11221,
+          },
+          {
+            c: 11122,
+          },
+          {
+            c: 21211,
+          },
+        ],
+      },
+      {
+        a: 2222,
+        b: [
+          {
+            c: 12211,
+          },
+          {
+            c: 12121,
+          },
+          {
+            c: 21211,
+          },
+          {
+            c: 12121,
+          },
+          {
+            c: 12121,
+          },
+        ],
+      },
+    ],
+  };
+
+  // 执行性能测试
+  testSignaturePerformance(testParams, 10000); // 测试100次
+  // try {
+  //   userApi
+  //     .login({ username: "111", password: "2222" })
+  //     .then((response) => {
+  //       console.log("Data:", response);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error:", error);
+  //     });
+  // } catch (err: any) {
+  //   error.value = err.message;
+  // } finally {
+  //   loading.value = false;
+  // }
 });
 </script>

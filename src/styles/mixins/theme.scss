@@ -1,0 +1,17 @@
+// 主题混入
+@mixin useTheme() {
+  @each $theme-name, $theme-map in $themes {
+    // 生成主题样式
+    [data-theme='#{$theme-name}'] & {
+      @each $key, $value in $theme-map {
+        #{$key}: $value;
+      }
+    }
+  }
+}
+
+// 获取特定主题的变量
+@function getThemeVar($var-name, $theme-name: 'light') {
+  $theme-map: map-get($themes, $theme-name);
+  @return map-get($theme-map, $var-name);
+} 

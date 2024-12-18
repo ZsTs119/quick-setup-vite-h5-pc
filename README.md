@@ -6,127 +6,253 @@
 
 - 🚀 Vite + Vue3 + TypeScript 开发
 - 📱 支持 H5 和 PC 端适配
-- 🔐 完整的登录权限控制
-- 📦 Pinia 状态管理（支持持久化）
+- 🔐 完整的登录权限控制（支持手机验证码和二维码登录）
+- 📦 Pinia 状态管理（Token 和用户信息分离设计）
 - 🎨 Element Plus 和 Vant UI 组件库
-- 🔄 Axios 请求封装
+- 🔄 Axios 请求封装（统一错误处理）
 - 🎯 TypeScript 类型安全
 - 📝 ESLint + Prettier 代码规范
 - 🎁 SVG 图标组件封装
+- 🌈 多主题支持（Less/Scss 双版本实现）
 
-## 快速开始
+## 目录结构
 
-```bash
-# 安装依赖
-npm install
-
-# 开发环境
-npm run dev        # PC端
-npm run dev:h5     # H5端
-
-# 生产构建
-npm run build:prod     # PC端
-npm run build:prod:h5  # H5端
 ```
-
-## 项目配置
-
-### Vite 配置特性
-
-- ⚡️ 快速的冷启动和热更新
-- 🔧 自动导入 API 和组件
-- 📦 智能的构建优化
-  - Gzip 压缩
-  - 图片优化
-  - 代码分割
-  - Tree-shaking
-- 🔍 开发工具支持
-  - TypeScript
-  - Vue DevTools
-  - 打包分析
-
-### 样式配置
-
-- 支持 SCSS/LESS 预处理器
-- 全局变量注入
-- 按需加载样式
-- 主题定制支持
+src/
+├── apis/                # API 接口
+│   ├── types/          # 接口类型定义
+│   │   └── index.ts
+│   ├── user.ts         # 用户相关接口
+│   └── index.ts        # API 统一导出
+├── assets/             # 静态资源
+│   └── icons/          # 图标资源
+│       └── svg/        # SVG 图标
+├── components/         # 公共组件
+│   ├── SvgIcon/       # SVG 图标组件
+│   └── ThemeSwitch/   # 主题切换组件
+├── router/             # 路由配置
+│   └── index.ts
+├── stores/             # 状态管理
+│   ├── theme.ts       # 主题状态
+│   ├── token.ts       # Token 管理
+│   └── user.ts        # 用户信息管理
+├── styles/             # 全局样式
+│   ├── themes/        # 主题相关
+│   │   ├── variables.scss
+│   │   └── variables.less
+│   ├── mixins/        # 混入
+│   │   ├── theme.scss
+│   │   ├── theme.less
+│   │   ├── common.scss
+│   │   └── common.less
+│   ├── theme.less     # 主题入口
+│   └── index.less     # 样式入口
+├── utils/             # 工具函数
+│   ├── http/         # HTTP 请求封装
+│   │   └── index.ts
+│   ├── encrypt.ts    # 加密相关
+│   └── index.ts      # 工具统一导出
+└── views/            # 页面组件
+    ├── login/        # 登录页面
+    ├── home/         # 首页
+    └── error/        # 错误页面
+```
 
 ## 核心功能
 
 ### 状态管理
 
-使用 Pinia 进行状态管理，支持数据持久化：
+采用 Token 和用户信息分离的设计：
 
 ```typescript
-import { useLoginStore } from '@/stores/login'
+// Token 管理
+import { useTokenStore } from '@/stores/token'
+const tokenStore = useTokenStore()
 
-const loginStore = useLoginStore()
-// 获取登录状态
-const isLoggedIn = loginStore.isLoggedIn
+// 设置认证信息
+tokenStore.setToken('your-token')
+tokenStore.setClientInfo('clientId', 'traceId')
+
+// 用户信息管理
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore()
+
+// 设置用户信息
+userStore.setUserInfo({
+  id: 1,
+  username: 'user'
+})
+
+// 登出（同时清除 token 和用户信息）
+userStore.logout()
+```
+
+### 登录认证
+
+支持多种登录方式：
+
+1. **手机验证码登录**：
+```typescript
+// 发送验证码
+const result = await getPhoneCode(phone)
+
+// 手机登录
+const result = await phoneLogin({
+  phone: '13800138000',
+  code: '123456'
+})
+```
+
+2. **二维码扫码登录**：
+```typescript
+// 获取二维码
+const result = await getLoginQRCode()
+
+// 检查扫码状态
+const result = await qrcodeLogin({
+  qrCode: 'qrcode-value'
+})
+```
+
+### API 使用示例
+
+```typescript
+// 1. API 定义
+// src/apis/user.ts
+export const phoneLogin = (params: PhoneLoginParams) => {
+  const requestData: RequestData<PhoneLoginParams> = {
+    parameter: params
+  }
+  return axiosInstance.post<LoginResponse>('/api/user/phone-login', requestData)
+}
+
+// 2. 在组件中使用
+import { phoneLogin, getPhoneCode } from '@/apis/user'
+
+// 发送验证码
+const handleSendCode = async () => {
+  try {
+    const { data } = await getPhoneCode(phone.value)
+    ElMessage.success('验证码发送成功')
+  } catch (error) {
+    ElMessage.error('验证码发送失败')
+  }
+}
+
+// 登录请求
+const handleLogin = async () => {
+  try {
+    const { data: result } = await phoneLogin({
+      phone: phone.value,
+      code: code.value
+    })
+    
+    // 存储认证信息
+    tokenStore.setToken(result.token)
+    userStore.setUserInfo(result)
+    
+    ElMessage.success('登录成功')
+  } catch (error) {
+    ElMessage.error('登录失败')
+  }
+}
+```
+
+### 请求封装
+
+统一的请求处理：
+
+```typescript
+// 请求拦截器自动添加认证信息
+{
+  token: tokenStore.token,
+  clientId: tokenStore.clientId,
+  traceId: tokenStore.traceId
+}
+
+// 响应拦截器自动处理登录过期
+if (code === 10001) {
+  userStore.logout()
+  router.push('/login')
+}
 ```
 
 ### 路由权限
 
-完整的路由权限控制系统：
+基于登录状态的路由控制：
 
 ```typescript
 {
   path: '/settings',
   meta: {
     requiresAuth: true,    // 需要登录
-    roles: ['admin'],      // 需要管理员权限
     title: '系统设置'      // 页面标题
   }
 }
 ```
 
-### API 请求
+### 主题系统
 
-规范的 API 请求封装：
-
-```typescript
-import { userApi } from '@/apis'
-
-// 登录请求
-const login = async (username: string, password: string) => {
-  const result = await userApi.login({ username, password })
-}
-```
-
-### 图标组件
-
-两种图标组件支持：
+支持 Less 和 Scss 两种实现方式：
 
 ```vue
-<!-- SVG图标 -->
-<svg-icon icon-class="user" />
+<style lang="scss" scoped>
+.my-component {
+  // 直接使用主题混入
+  @include useTheme;
+  
+  // 直接使用CSS变量
+  color: var(--text-primary);
+  background-color: var(--bg-color);
+}
+</style>
 
-<!-- IconFont图标 -->
-<icon-font type="close" />
+<!-- 或使用 Less -->
+<style lang="less" scoped>
+.my-component {
+  // 直接使用主题混入
+  .use-theme();
+  
+  // 直接使用CSS变量
+  color: var(--text-primary);
+  background-color: var(--bg-color);
+}
+</style>
+```
+
+### 通用样式混入
+
+提供常用的样式混入：
+
+```scss
+// Flex 布局
+@include flex(column, center, center);
+
+// 文本溢出
+@include text-ellipsis(2);
+
+// 滚动条样式
+@include scrollbar(8px);
+
+// 阴影效果
+@include box-shadow('light');
 ```
 
 ## 开发规范
 
-### 目录结构
-
-```
-src/
-├── apis/           # API 接口
-├── assets/         # 静态资源
-├── components/     # 公共组件
-├── router/         # 路由配置
-├── stores/         # 状态管理
-├── styles/         # 全局样式
-├── utils/          # 工具函数
-└── views/          # 页面组件
-```
-
 ### TypeScript 规范
 
 - 统一使用 interface 定义对象类型
-- 必须声明 API 请求和响应类型
-- 使用类型推导优化代码
+- API 请求和响应必须有类型定义
+- 避免使用 any 类型
+- 合理使用类型推导
+
+### 样式规范
+
+- 优先使用提供的混入函数
+- 遵循 BEM 命名规范
+- 使用 CSS 变量实现主题切换
+- 合理使用预处理器特性
 
 ### API 开发规范
 
