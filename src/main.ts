@@ -23,7 +23,7 @@ app.component('incon-fent', InconFent);
 //创建pinia
 const pinia = createPinia()
 //使用pinia持久化插件
-pinia.use(piniaPluginPersistedstate)
+pinia.use(piniaPluginPersistedstate as any)
 //使用路由器
 //使用pinia
 app.use(router).use(pinia)
