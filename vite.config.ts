@@ -84,14 +84,14 @@ export default defineConfig(({ mode }) => {
     },
 
     build: {
-      minify: 'terser', // 使用terser进行代码压缩
+      minify: "terser", // 使用terser进行代码压缩
       terserOptions: {
         compress: {
-          drop_console: true, // 移除console语句
-          drop_debugger: true // 移除debugger语句
+          drop_console: env.VITE_NODE_ENV !== "development", // 移除console语句
+          drop_debugger: env.VITE_NODE_ENV !== "development", // 移除debugger语句
         },
         output: {
-          comments: true, // 移除注释
+          comments: env.VITE_NODE_ENV !== "development", // 移除注释
         },
       },
       //为 vendor 代码创建独的 chunk（不同依赖库提取到独立的文件）
@@ -114,6 +114,10 @@ export default defineConfig(({ mode }) => {
             }
           },
         },
+        onwarn(warning, warn) {
+          if (warning.code === "THIS_IS_UNDEFINED") return;
+          warn(warning);
+        },
       },
       commonjsOptions: {
         include: [/lodash-es/] // 转换CommonJS模块为ESM
@@ -131,6 +135,7 @@ export default defineConfig(({ mode }) => {
         [API_BASE_URL]: {
           target: env.VITE_NODE_ENV === 'development' ? env.VITE_TEST_URL : env.VITE_PRO_URL,
           changeOrigin: true,
+          secure: false,
           rewrite: (path) => path.replace(new RegExp(`^${env.VITE_API_BASE_URL}`), '')
         }
       }
@@ -154,6 +159,16 @@ export default defineConfig(({ mode }) => {
             @import "@/styles/mixins/common.scss";
           `
         }
+      },
+    },
+    esbuild: {
+      logOverride: { "this-is-undefined-in-esm": "silent" },
+      // 禁用 TypeScript 类型检查
+      tsconfigRaw: {
+        compilerOptions: {
+          skipLibCheck: true,
+          skipDefaultLibCheck: true,
+        },
       },
     },
   }
