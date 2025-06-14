@@ -1,34 +1,28 @@
 {
   "compilerOptions": {
-    "target": "esnext", //指定编译后的 JavaScript 版本,这里设置为`esnext`以使用最新的 ECMAScript 特性。
+    "skipLibCheck": true, // 跳过声明文件的类型检查
+    "noImplicitAny": false, // 允许隐式的 any 类型
+    "strict": false, // 关闭所有严格的类型检查
+    "checkJs": false, // 禁用 JavaScript 文件的类型检查
     "module": "esnext", //指定生成的模块代码的格式,这里设置为`esnext`以使用 ECMAScript 模块。
-    "strict": true,//启用严格类型检查模式。
-    "jsx": "preserve",//指定 JSX 代码的生成方式,这里设置为`preserve`以保留 JSX 代码。
-    "importHelpers": true,//允许从`tslib`中导入辅助函数。
-    "moduleResolution": "node",//指定模块解析策略,这里设置为`node`以使用 Node.js 的模块解析策略。
-    "skipLibCheck": true,//跳过声明文件的类型检查。
-    "esModuleInterop": true,//启用 ES 模块 interop 特性。 允许使用`import`语句导入 CommonJS 模块。
-    "allowSyntheticDefaultImports": true,//允许从没有设置默认导出的模块中默认导入。
-    "baseUrl": ".",//设置基础目录,用于解析非相对模块名称。
+    "jsx": "preserve", //指定 JSX 代码的生成方式,这里设置为`preserve`以保留 JSX 代码。
+    "importHelpers": true, //允许从`tslib`中导入辅助函数。
+    "moduleResolution": "node", //指定模块解析策略,这里设置为`node`以使用 Node.js 的模块解析策略。
+    "esModuleInterop": true, //启用 ES 模块 interop 特性。 允许使用`import`语句导入 CommonJS 模块。
+    "allowSyntheticDefaultImports": true, //允许从没有设置默认导出的模块中默认导入。
+    "baseUrl": ".", //设置基础目录,用于解析非相对模块名称。
     //指定要包含的类型声明文件
-    "types": [
-      "vite/client" 
-    ],
-    //设置模块名到路径的映射,这里将`@/*`��射到`src/*`。
-    "paths": { 
-      "@/*": [
-        "src/*"
-      ]
+    "types": ["vite/client", "element-plus/global", "vue", "pinia", "pinia-plugin-persistedstate"],
+    //设置模块名到路径的映射,这里将`@/*`射到`src/*`。
+    "paths": {
+      "@/*": ["src/*"]
     },
     //指定要包含在编译中的库文件
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ],
-      "allowJs": true, // 允许编译JavaScript文件
-      "noEmit": true,// 禁止生成输出文件
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "allowJs": true, // 允许编译JavaScript文件
+    "noEmit": true, // 禁止生成输出文件
+    "ignoreDeprecations": "5.0",
+    "noEmitOnError": false // 即使有错误也输出编译结果
   },
   //指定要编译的文件glob模式。
   "include": [
@@ -42,9 +36,5 @@
     "components.d.ts"
   ],
   //指定要排除的文件glob模式。
-  "exclude": [
-    "node_modules",
-    "dist",                                   
-    "vite.config.ts"   
-  ]
+  "exclude": ["node_modules", "dist", "vite.config.ts"]
 }

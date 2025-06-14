@@ -35,6 +35,7 @@
   <div v-if="loading">Loading...</div>
   <pre v-if="data">{{ data }}</pre>
   <div v-if="error" style="color: red">{{ error }}</div>
+  <router-view />
 </template>
 
 <script lang="ts" setup name="App">

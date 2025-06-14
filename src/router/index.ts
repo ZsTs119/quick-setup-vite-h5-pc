@@ -1,5 +1,33 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import NProgress from "nprogress";
+import "nprogress/nprogress.css";
+
+// 配置 NProgress
+NProgress.configure({
+  easing: "ease", // 动画方式
+  speed: 500, // 递增进度条的速度
+  showSpinner: false, // 是否显示加载ico
+  trickleSpeed: 200, // 自动递增间隔
+  minimum: 0.3, // 初始化时的最小百分比
+});
+
+// 添加自定义样式
+const style = document.createElement('style')
+style.textContent = `
+  #nprogress .bar {
+    background: #e6492b !important; /* 使用CSS变量，支持主题切换 */
+    height: 3px;
+  }
+  #nprogress .spinner-icon {
+    border-top-color: #e6492b;
+    border-left-color: #e6492b;
+  }
+  #nprogress .peg {
+    box-shadow: none;
+  }
+`
+document.head.appendChild(style)
 
 // 定义路由元信息类型
 interface CustomRouteMetaData {
@@ -71,8 +99,7 @@ router.beforeEach((to, from, next) => {
     if (!userStore.isLoggedIn) {
       // 未登录，重定向到登录页
       next({
-        path: '/login',
-        query: { redirect: to.fullPath }
+        path: '/login'
       })
       return
     }
@@ -81,7 +108,8 @@ router.beforeEach((to, from, next) => {
     next({ path: '/' })
     return
   }
-
+  // 允许访问
+  NProgress.start();
   // 允许访问
   next()
 })
@@ -89,6 +117,7 @@ router.beforeEach((to, from, next) => {
 // 全局后置钩子
 router.afterEach((to, from) => {
   // 可以在这里添加页面访问统计等逻辑
+  NProgress.done();
 })
 
 export default router

@@ -159,8 +159,6 @@ const startQRCodeCheck = () => {
 // 统一处理登录成功
 const handleLoginSuccess = (result: LoginResponse) => {
   tokenStore.setToken(result.token)
-  tokenStore.setClientInfo(result.clientId, result.traceId)
-  
   userStore.setUserInfo({
     id: result.userId,
     username: result.username
@@ -202,7 +200,7 @@ defineExpose({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  height: 50vh;
   
   .login-form {
     display: flex;
