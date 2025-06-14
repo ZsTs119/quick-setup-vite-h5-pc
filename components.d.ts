@@ -12,6 +12,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SvgIcon: typeof import('./src/components/SvgIcon/index.vue')['default']
+    ThemeSwitch: typeof import('./src/components/ThemeSwitch/index.vue')['default']
     VanButton: typeof import('vant/es')['Button']
     VanSwitch: typeof import('vant/es')['Switch']
   }

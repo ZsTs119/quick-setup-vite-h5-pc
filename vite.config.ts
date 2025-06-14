@@ -153,13 +153,6 @@ export default defineConfig(({ mode }) => {
             @import "@/styles/mixins/theme.scss";
             @import "@/styles/mixins/common.scss";
           `
-        },
-        less: {
-          additionalData: `
-            @import "@/styles/themes/variables.less";
-            @import "@/styles/mixins/theme.less";
-            @import "@/styles/mixins/common.less";
-          `
         }
       },
     },

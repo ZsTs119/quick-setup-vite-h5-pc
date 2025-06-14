@@ -9,8 +9,6 @@ interface TokenState {
 export const useTokenStore = defineStore('tokenStore', {
   state: (): TokenState => ({
     token: undefined,
-    clientId: undefined,
-    traceId: undefined
   }),
 
   getters: {
@@ -21,20 +19,14 @@ export const useTokenStore = defineStore('tokenStore', {
     setToken(token: string) {
       this.token = token
     },
-
-    setClientInfo(clientId: string, traceId: string) {
-      this.clientId = clientId
-      this.traceId = traceId
-    },
-
     clear() {
       this.token = undefined
-      this.clientId = undefined
-      this.traceId = undefined
+      localStorage.removeItem('quick-token-store')
     }
   },
 
   persist: {
-    key: 'token-store'
+    key: 'quick-token-store',
+    storage: localStorage
   }
 }) 
