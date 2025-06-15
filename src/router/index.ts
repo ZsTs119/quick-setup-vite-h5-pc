@@ -1,33 +1,8 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import NProgress from "nprogress";
-import "nprogress/nprogress.css";
-
-// 配置 NProgress
-NProgress.configure({
-  easing: "ease", // 动画方式
-  speed: 500, // 递增进度条的速度
-  showSpinner: false, // 是否显示加载ico
-  trickleSpeed: 200, // 自动递增间隔
-  minimum: 0.3, // 初始化时的最小百分比
-});
-
-// 添加自定义样式
-const style = document.createElement('style')
-style.textContent = `
-  #nprogress .bar {
-    background: #e6492b !important; /* 使用CSS变量，支持主题切换 */
-    height: 3px;
-  }
-  #nprogress .spinner-icon {
-    border-top-color: #e6492b;
-    border-left-color: #e6492b;
-  }
-  #nprogress .peg {
-    box-shadow: none;
-  }
-`
-document.head.appendChild(style)
+import homeRouter from './home/homeRouter'
+import loginRouter from './login/loginRouter'
+import NProgress from '@/hooks/useNProgress'
 
 // 定义路由元信息类型
 interface CustomRouteMetaData {
@@ -42,24 +17,6 @@ declare module 'vue-router' {
 
 // 定义路由配置
 const routes: RouteRecordRaw[] = [
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/views/login/index.vue'),
-    meta: {
-      requiresAuth: false,
-      title: '登录'
-    }
-  },
-  {
-    path: '/',
-    name: 'Home',
-    component: () => import('@/views/home/index.vue'),
-    meta: {
-      requiresAuth: true,
-      title: '首页'
-    }
-  },
   {
     path: '/settings',
     name: 'Settings',
@@ -78,7 +35,11 @@ const routes: RouteRecordRaw[] = [
       requiresAuth: false,
       title: '404'
     }
-  }
+  },
+  //引入首页路由
+  ...homeRouter,
+  //引入登录路由
+  ...loginRouter
 ]
 
 // 创建路由实例

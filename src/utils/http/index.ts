@@ -7,35 +7,7 @@ import { useTokenStore } from '@/stores/token'
 import { useUserStore } from '@/stores/user'
 import { debounce } from 'lodash-es'
 import router from '@/router'
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
-
-// 配置 NProgress
-NProgress.configure({
-  easing: "ease", // 动画方式
-  speed: 500, // 递增进度条的速度
-  showSpinner: false, // 是否显示加载ico
-  trickleSpeed: 200, // 自动递增间隔
-  minimum: 0.3, // 初始化时的最小百分比
-});
-
-
-// 添加自定义样式
-const style = document.createElement('style')
-style.textContent = `
-  #nprogress .bar {
-    background: #e6492b !important; /* 使用CSS变量，支持主题切换 */
-    height: 3px;
-  }
-  #nprogress .spinner-icon {
-    border-top-color: #e6492b;
-    border-left-color: #e6492b;
-  }
-  #nprogress .peg {
-    box-shadow: none;
-  }
-`
-document.head.appendChild(style)
+import NProgress from '@/hooks/useNProgress'
 
 // 定义请求参数基础接口
 interface BaseRequestData {
