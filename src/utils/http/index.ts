@@ -223,7 +223,7 @@ export const streamRequest = async <T>(
     }
 
     console.error('Stream API Error:', error)
-    const message = error.response?.data?.errorMessages || '系统正在升级中...'
+    const message = error.response?.data?.message || error.response?.data?.errorMessages || '系统正在升级中...'
     console.error('API Error:', message)
     debouncedErrorMessage(message)
     onError?.(error)

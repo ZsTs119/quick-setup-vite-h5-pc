@@ -16,6 +16,7 @@
     "type-check": "vue-tsc --noEmit --skipLibCheck"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@fingerprintjs/fingerprintjs": "^4.6.2",
     "@rollup/plugin-commonjs": "^26.0.1",
     "@rollup/plugin-node-resolve": "^15.2.3",

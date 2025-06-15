@@ -10,7 +10,7 @@ interface ThemeState {
 export const useThemeStore = defineStore('theme', {
   state: (): ThemeState => ({
     currentTheme: 'light',
-    isDarkMode: false
+    isDarkMode: true
   }),
 
   actions: {
@@ -18,6 +18,7 @@ export const useThemeStore = defineStore('theme', {
       this.currentTheme = theme
       this.isDarkMode = theme === 'dark'
       document.documentElement.setAttribute('data-theme', theme)
+
       // 保存主题设置到本地存储
       localStorage.setItem('theme', theme)
     },
@@ -36,7 +37,6 @@ export const useThemeStore = defineStore('theme', {
   },
 
   persist: {
-    key: 'quick-theme-store',
-    storage: localStorage
+    key: 'quick-theme-store'
   }
 }) 
