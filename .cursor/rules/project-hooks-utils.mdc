@@ -1,0 +1,414 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 项目核心Hooks与方法规则
+
+## 概述
+
+本规则旨在说明项目中关键的Hooks和方法的使用方式，这些工具函数和状态管理方法对开发新功能至关重要。掌握这些核心方法可以帮助开发者快速理解项目架构，并高效地进行功能开发。
+
+## 1. 用户认证与权限管理
+
+### 1.1 用户状态管理 (`useUserStore`)
+
+用户信息和登录状态的核心管理工具。
+
+```typescript
+import { useUserStore } from '@/stores/user';
+
+const userStore = useUserStore();
+
+// 检查用户是否已登录
+if (userStore.isLoggedIn) {
+  // 用户已登录，执行操作
+}
+
+// 获取用户信息
+const userId = userStore.userInfo?.id;
+const username = userStore.userInfo?.username;
+
+// 更新特定用户信息
+userStore.updateUserInfo('avatar', 'new-avatar-url.jpg');
+
+// 用户登出
+await userStore.logout(); // 返回Promise，可以在登出后执行跳转
+```
+
+### 1.2 Token管理 (`useTokenStore`)
+
+处理用户认证令牌的管理与验证。
+
+```typescript
+import { useTokenStore } from '@/stores/token';
+
+const tokenStore = useTokenStore();
+
+// 检查Token是否有效
+if (tokenStore.isValid) {
+  // Token有效，可以发起需要认证的请求
+}
+
+// 设置新Token（通常在登录后）
+tokenStore.setToken('your-auth-token');
+
+// 清除Token（登出操作的一部分）
+tokenStore.clear();
+```
+
+### 1.3 登录操作流程
+
+典型的登录流程如下：
+
+```typescript
+import { userApi } from '@/apis';
+import { useUserStore } from '@/stores/user';
+import { useTokenStore } from '@/stores/token';
+import { useRouter } from 'vue-router';
+
+const userStore = useUserStore();
+const tokenStore = useTokenStore();
+const router = useRouter();
+
+async function handleLogin(username: string, password: string) {
+  try {
+    // 调用登录API
+    const result = await userApi.phoneLogin({
+      phone: username,
+      code: password
+    });
+    
+    // 保存认证信息
+    tokenStore.setToken(result.token);
+    
+    // 保存用户信息
+    userStore.setUserInfo({
+      id: result.userId,
+      username: result.username,
+      // 其他用户信息
+    });
+    
+    // 登录成功后跳转
+    router.push('/');
+  } catch (error) {
+    // 错误处理
+    console.error('登录失败:', error);
+  }
+}
+```
+
+## 2. 路由导航与权限控制
+
+### 2.1 路由导航与守卫
+
+项目已配置路由守卫来处理权限验证：
+
+```typescript
+// 导航到需要权限的页面，路由守卫会自动检查
+router.push('/settings');
+
+// 带参数的导航
+router.push({
+  path: '/user',
+  query: { id: 123 }
+});
+
+// 导航到登录页并提供重定向
+router.push({
+  path: '/login',
+  query: { redirect: currentPath }
+});
+```
+
+### 2.2 自定义权限检查
+
+在组件内执行额外的权限检查：
+
+```typescript
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
+import { onMounted } from 'vue';
+
+export default {
+  setup() {
+    const userStore = useUserStore();
+    const router = useRouter();
+    
+    onMounted(() => {
+      // 检查特定权限
+      if (!userStore.isLoggedIn || !userStore.userInfo?.isAdmin) {
+        // 无权限访问，重定向
+        router.push('/no-permission');
+      }
+    });
+  }
+};
+```
+
+## 3. 主题管理与切换
+
+### 3.1 主题状态管理 (`useThemeStore`)
+
+控制应用的主题设置。
+
+```typescript
+import { useThemeStore } from '@/stores/theme';
+
+const themeStore = useThemeStore();
+
+// 获取当前主题
+const currentTheme = themeStore.currentTheme;
+
+// 检查是否为暗黑模式
+const isDark = themeStore.isDarkMode;
+
+// 切换主题
+themeStore.setTheme('dark'); // 可选值: 'light', 'dark', 'red', 'purple'
+
+// 切换暗黑/亮色模式
+themeStore.toggleDarkMode();
+
+// 初始化主题（通常在应用启动时调用）
+themeStore.initTheme();
+```
+
+### 3.2 主题切换动画 (`useThemeTransition`)
+
+应用主题切换时的过渡动画效果。
+
+```typescript
+import { useThemeTransition } from '@/hooks/useThemeTransition';
+import { ref } from 'vue';
+
+const { handleThemeChange } = useThemeTransition();
+const triggerElement = ref<HTMLElement | null>(null);
+
+// 切换主题并应用动画
+async function changeTheme(theme: 'light' | 'dark') {
+  await handleThemeChange(
+    theme,
+    triggerElement.value, // 动画起点元素（可选）
+    {
+      duration: 500, // 动画持续时间（毫秒）
+      easing: 'cubic-bezier(0.4, 0, 0.2, 1)' // 动画缓动函数
+    }
+  );
+}
+```
+
+## 4. HTTP请求与API调用
+
+### 4.1 标准API请求
+
+使用封装好的API模块发起请求：
+
+```typescript
+import { userApi } from '@/apis';
+
+// 异步请求示例
+async function fetchUserData() {
+  try {
+    // 登录请求
+    const loginResult = await userApi.phoneLogin({
+      phone: '13800138000',
+      code: '123456'
+    });
+    console.log('登录成功:', loginResult);
+    
+    // 获取验证码
+    await userApi.getPhoneCode('13800138000');
+    console.log('验证码已发送');
+  } catch (error) {
+    // 错误已被拦截器处理，这里可以添加额外的错误处理逻辑
+    console.error('操作失败:', error);
+  }
+}
+```
+
+### 4.2 流式请求
+
+处理需要流式返回数据的API调用：
+
+```typescript
+import { scriptApi } from '@/apis';
+import { ref } from 'vue';
+
+const messages = ref<string[]>([]);
+const isLoading = ref(false);
+
+// 创建AbortController用于取消请求
+const abortController = new AbortController();
+
+function startStreamRequest() {
+  isLoading.value = true;
+  messages.value = [];
+  
+  scriptApi.streamScript({
+    requestUrl: '/api/stream',
+    params: { query: '请求参数' },
+    onChunk: (chunk) => {
+      // 处理每个数据块
+      messages.value.push(chunk);
+    },
+    onComplete: () => {
+      // 请求完成回调
+      isLoading.value = false;
+      console.log('请求完成');
+    },
+    onError: (error) => {
+      // 错误处理回调
+      isLoading.value = false;
+      console.error('请求错误:', error);
+    },
+    signal: abortController.signal // 用于取消请求
+  });
+}
+
+function cancelRequest() {
+  // 取消进行中的请求
+  abortController.abort();
+  isLoading.value = false;
+}
+```
+
+## 5. 进度条管理 (`useNProgress`)
+
+页面加载和请求过程中的进度条显示：
+
+```typescript
+import NProgress from '@/hooks/useNProgress';
+
+// 开始显示进度条
+NProgress.start();
+
+// 增加进度条进度
+NProgress.inc(0.2); // 增加20%
+
+// 设置进度条进度
+NProgress.set(0.5); // 设置为50%
+
+// 完成进度条
+NProgress.done();
+```
+
+> 注意：路由导航时已自动集成进度条显示，无需手动控制。
+
+## 6. 设备指纹与安全
+
+### 6.1 获取设备指纹
+
+用于用户身份识别和安全验证：
+
+```typescript
+import { getClientId } from '@/utils/device';
+
+async function getDeviceId() {
+  // 获取设备唯一标识
+  const clientId = await getClientId();
+  console.log('设备ID:', clientId);
+  return clientId;
+}
+```
+
+### 6.2 签名生成
+
+API请求安全签名（通常由请求拦截器自动处理）：
+
+```typescript
+import { generateSignature } from '@/utils/encrypt';
+
+// 生成请求签名
+const params = {
+  username: 'test',
+  timestamp: Date.now()
+};
+
+const signature = generateSignature(params);
+console.log('请求签名:', signature);
+```
+
+## 7. 最佳实践
+
+1. **组件初始化**：在组件的`setup`或`onMounted`钩子中获取必要的用户状态和权限信息
+2. **权限检查**：所有需要权限的操作都应先检查`userStore.isLoggedIn`
+3. **错误处理**：API请求使用`try/catch`捕获异常，虽然全局拦截器已处理基本错误
+4. **取消请求**：长时间运行的请求（特别是流式请求）应提供取消机制
+5. **状态持久化**：用户信息和Token已配置持久化，无需手动处理本地存储
+6. **主题切换**：使用`useThemeTransition`而非直接调用`themeStore.setTheme`以获得动画效果
+
+## 8. 使用示例
+
+### 完整的登录与权限控制流程
+
+```typescript
+<script setup lang="ts">
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
+import { useTokenStore } from '@/stores/token';
+import { userApi } from '@/apis';
+
+const router = useRouter();
+const userStore = useUserStore();
+const tokenStore = useTokenStore();
+
+const phone = ref('');
+const code = ref('');
+const loading = ref(false);
+
+// 获取验证码
+async function getCode() {
+  if (!phone.value) {
+    alert('请输入手机号');
+    return;
+  }
+  
+  try {
+    await userApi.getPhoneCode(phone.value);
+    alert('验证码已发送');
+  } catch (error) {
+    console.error('获取验证码失败:', error);
+  }
+}
+
+// 登录处理
+async function handleLogin() {
+  if (!phone.value || !code.value) {
+    alert('请输入手机号和验证码');
+    return;
+  }
+  
+  loading.value = true;
+  
+  try {
+    // 调用登录API
+    const result = await userApi.phoneLogin({
+      phone: phone.value,
+      code: code.value
+    });
+    
+    // 保存认证信息
+    tokenStore.setToken(result.token);
+    
+    // 保存用户信息
+    userStore.setUserInfo({
+      id: result.userId,
+      username: result.username
+    });
+    
+    // 登录成功后跳转
+    router.push('/');
+  } catch (error) {
+    console.error('登录失败:', error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+// 已登录用户重定向
+if (userStore.isLoggedIn) {
+  router.push('/');
+}
+</script>
+

@@ -1,0 +1,328 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 项目新增模块文件规则
+
+## 概述
+
+本规则说明在项目中添加新功能模块时，需要创建和修改的文件，以及应遵循的规范。遵循这些规则可以确保新模块与现有项目架构保持一致，并正确集成到系统中。
+
+## 新增模块的文件结构
+
+添加新功能模块通常需要创建以下文件（以"产品管理"功能为例）：
+
+```
+src/
+├── apis/
+│   ├── modules/
+│   │   └── product.ts        # 产品相关API
+│   └── index.ts              # 需要修改，导出新模块
+├── views/
+│   └── product/              # 产品模块页面目录
+│       ├── index.vue         # 产品列表页面
+│       ├── detail.vue        # 产品详情页面
+│       ├── components/       # 产品模块私有组件
+│       │   ├── ProductForm.vue
+│       │   └── ProductItem.vue
+│       └── types.ts          # 产品模块类型定义
+├── router/
+│   ├── product/              # 产品模块路由
+│   │   └── productRouter.ts  # 产品路由配置
+│   └── index.ts              # 需要修改，引入产品路由
+└── stores/
+    └── product.ts            # 产品状态管理（如需要）
+```
+
+## 文件创建与修改步骤
+
+### 1. 创建API模块 (src/apis/modules/)
+
+首先创建与新功能相关的API请求文件：
+
+```typescript
+// src/apis/modules/product.ts
+import axiosInstance from '@/utils/http'
+import type { RequestData } from '../types/common'
+
+// 定义产品相关接口类型
+export interface Product {
+  id: number
+  name: string
+  price: number
+  description: string
+}
+
+interface ProductListParams {
+  page: number
+  pageSize: number
+  keyword?: string
+}
+
+interface ProductDetailParams {
+  id: number
+}
+
+/**
+ * 获取产品列表
+ */
+export const getProductList = (params: ProductListParams) => {
+  const requestData: RequestData<ProductListParams> = {
+    parameter: params
+  }
+  return axiosInstance.post<Product[]>('/api/product/list', requestData)
+}
+
+/**
+ * 获取产品详情
+ */
+export const getProductDetail = (params: ProductDetailParams) => {
+  const requestData: RequestData<ProductDetailParams> = {
+    parameter: params
+  }
+  return axiosInstance.post<Product>('/api/product/detail', requestData)
+}
+```
+
+然后修改API导出文件，添加新模块：
+
+```typescript
+// src/apis/index.ts
+// 统一导出所有 API 模块
+export * as userApi from './modules/user'
+export * as scriptApi from './modules/script'
+export * as productApi from './modules/product' // 添加新API模块
+```
+
+### 2. 创建视图组件 (src/views/)
+
+创建新功能的页面组件：
+
+```vue
+<!-- src/views/product/index.vue -->
+<template>
+  <div class="product-container">
+    <h1>产品列表</h1>
+    <!-- 页面内容 -->
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { productApi } from '@/apis'
+import type { Product } from '@/apis/modules/product'
+
+const products = ref<Product[]>([])
+const loading = ref(false)
+
+const fetchProducts = async () => {
+  loading.value = true
+  try {
+    const data = await productApi.getProductList({
+      page: 1,
+      pageSize: 10
+    })
+    products.value = data
+  } catch (error) {
+    console.error('获取产品列表失败:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchProducts()
+})
+</script>
+
+<style lang="scss" scoped>
+.product-container {
+  padding: 20px;
+}
+</style>
+```
+
+### 3. 创建路由配置 (src/router/)
+
+创建新模块的路由配置文件：
+
+```typescript
+// src/router/product/productRouter.ts
+const productRouter = [
+  {
+    path: '/product',
+    name: 'ProductList',
+    component: () => import('@/views/product/index.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '产品列表'
+    }
+  },
+  {
+    path: '/product/:id',
+    name: 'ProductDetail',
+    component: () => import('@/views/product/detail.vue'),
+    meta: {
+      requiresAuth: true,
+      title: '产品详情'
+    }
+  }
+]
+
+export default productRouter
+```
+
+然后修改主路由文件，导入新路由：
+
+```typescript
+// src/router/index.ts
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+import homeRouter from './home/homeRouter'
+import loginRouter from './login/loginRouter'
+import productRouter from './product/productRouter' // 导入新路由模块
+import NProgress from '@/hooks/useNProgress'
+
+// 定义路由配置
+const routes: RouteRecordRaw[] = [
+  // 已有路由
+  ...homeRouter,
+  ...loginRouter,
+  ...productRouter, // 添加产品路由
+  // 其他路由
+]
+
+// 其余代码保持不变
+```
+
+### 4. 创建状态管理 (src/stores/)
+
+如果新功能需要状态管理，创建对应的Store：
+
+```typescript
+// src/stores/product.ts
+import { defineStore } from 'pinia'
+import { productApi } from '@/apis'
+import type { Product } from '@/apis/modules/product'
+
+interface ProductState {
+  productList: Product[]
+  currentProduct: Product | null
+  loading: boolean
+}
+
+export const useProductStore = defineStore('productStore', {
+  state: (): ProductState => ({
+    productList: [],
+    currentProduct: null,
+    loading: false
+  }),
+  
+  actions: {
+    async fetchProductList(params: { page: number, pageSize: number }) {
+      this.loading = true
+      try {
+        const data = await productApi.getProductList(params)
+        this.productList = data
+      } catch (error) {
+        console.error('获取产品列表失败:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+    
+    async fetchProductDetail(id: number) {
+      this.loading = true
+      try {
+        const data = await productApi.getProductDetail({ id })
+        this.currentProduct = data
+      } catch (error) {
+        console.error('获取产品详情失败:', error)
+      } finally {
+        this.loading = false
+      }
+    }
+  }
+})
+```
+
+## 特殊组件扩展
+
+### 1. 添加全局组件
+
+如果需要创建新的全局组件，还需要在`main.ts`中注册：
+
+```typescript
+// src/main.ts
+import { createApp } from 'vue'
+import App from './App.vue'
+import MyGlobalComponent from './components/MyGlobalComponent/index.vue'
+
+const app = createApp(App)
+
+// 注册全局组件
+app.component('my-global-component', MyGlobalComponent)
+
+// 其余代码保持不变
+app.mount('#app')
+```
+
+### 2. 添加自定义Hook
+
+如果需要创建新的自定义Hook，将其添加到`hooks`目录：
+
+```typescript
+// src/hooks/useProductFilter.ts
+import { ref, computed } from 'vue'
+import type { Product } from '@/apis/modules/product'
+
+export function useProductFilter(productList: Ref<Product[]>) {
+  const keyword = ref('')
+  
+  const filteredProducts = computed(() => {
+    if (!keyword.value) return productList.value
+    
+    return productList.value.filter(product => 
+      product.name.toLowerCase().includes(keyword.value.toLowerCase())
+    )
+  })
+  
+  return {
+    keyword,
+    filteredProducts
+  }
+}
+```
+
+## 提交前的检查清单
+
+在提交新模块代码前，请确保：
+
+1. **完整性检查**
+   - [x] API模块已创建并在`index.ts`中导出
+   - [x] 视图组件已创建并包含必要的逻辑
+   - [x] 路由配置已添加并在主路由文件中导入
+   - [x] 状态管理（如需要）已创建并实现
+
+2. **一致性检查**
+   - [x] 文件和目录命名符合项目规范
+   - [x] 组件命名符合项目规范
+   - [x] API请求遵循项目的API调用规范
+   - [x] 样式使用了项目的主题变量
+
+3. **功能检查**
+   - [x] 所有页面都能正常访问
+   - [x] API请求能正常发起并处理响应
+   - [x] 页面在不同主题下显示正常
+   - [x] 功能在PC和H5环境下都能正常工作
+
+## 最佳实践
+
+1. **渐进开发**：先完成API接口、再开发视图组件、最后添加路由
+2. **模块隔离**：新模块的组件和状态应尽量自包含，减少对其他模块的依赖
+3. **组件复用**：优先考虑使用项目现有组件，保持UI一致性
+4. **类型安全**：为所有API请求和响应定义TypeScript接口
+5. **响应式设计**：页面设计应同时考虑PC和H5环境
+6. **主题兼容**：使用项目的主题变量，确保在不同主题下显示正常
+

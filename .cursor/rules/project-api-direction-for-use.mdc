@@ -1,0 +1,250 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 项目API使用规则
+
+## 概述
+
+本项目采用了统一的API请求封装，基于Axios实现，包含标准请求和流式请求两种方式，并集成了完整的权限认证、请求签名、错误处理等机制。本规则旨在规范API的定义、使用和创建流程，确保团队开发中API的一致性和安全性。
+
+## API请求流程与权限认证
+
+### 1. 请求流程
+
+每个API请求都经过以下流程处理：
+
+1. **请求前准备**：添加公共参数，包括平台标识、请求时间、请求ID等
+2. **权限验证**：添加认证Token（如果已登录）
+3. **请求签名**：基于所有参数生成数字签名，防篡改
+4. **设备指纹**：添加设备唯一标识，增强安全性
+5. **请求发送**：将处理后的数据发送到后端
+6. **响应处理**：统一处理响应，包括成功和错误情况
+
+### 2. 权限认证机制
+
+项目使用Token进行权限认证，通过以下方式实现：
+
+- Token存储在Pinia状态管理中（`useTokenStore`）
+- 每次请求自动携带Token
+- Token过期时（errorCode=10001）自动登出并跳转登录页
+- 设备指纹（clientId）作为辅助认证手段
+
+### 3. 请求签名
+
+为保证API安全性，所有请求都会生成签名：
+
+- 对请求参数按照特定规则排序并连接
+- 使用MD5算法生成签名
+- 签名随请求一起发送，服务端验证请求完整性
+
+## API接口定义规范
+
+### 1. 目录结构
+
+```
+src/
+├── apis/
+│   ├── modules/        # 按业务模块组织的API集合
+│   │   ├── user.ts     # 用户相关API
+│   │   └── script.ts   # 脚本相关API
+│   ├── types/          # API类型定义
+│   │   └── common.ts   # 通用类型定义
+│   └── index.ts        # 统一导出入口
+```
+
+### 2. API定义规范
+
+所有API应遵循以下规范定义：
+
+- **按业务模块分组**：相同业务领域的API放在同一个模块文件中
+- **类型严格定义**：为请求参数和响应数据定义TypeScript接口
+- **注释完善**：每个API函数应有完整的JSDoc注释
+- **命名规范**：API函数采用动词+名词的命名方式（如`getUser`、`createOrder`）
+
+### 3. API接口示例
+
+```typescript
+// src/apis/modules/user.ts
+import axiosInstance from '@/utils/http'
+import type { RequestData } from '../types/common'
+
+// 定义请求参数接口
+interface LoginParams {
+  username: string
+  password: string
+}
+
+// 定义响应数据接口
+interface LoginResponse {
+  token: string
+  userId: number
+  username: string
+}
+
+/**
+ * 用户登录
+ * @param params 登录参数
+ * @returns 登录响应数据
+ */
+export const login = (params: LoginParams) => {
+  const requestData: RequestData<LoginParams> = {
+    parameter: params
+  }
+  return axiosInstance.post<LoginResponse>('/api/login', requestData)
+}
+```
+
+## API创建流程
+
+### 1. 标准API创建步骤
+
+创建新API接口时，请按照以下步骤进行：
+
+1. **确定业务模块**：确定API所属的业务模块
+2. **定义数据类型**：
+   - 为请求参数定义接口类型
+   - 为响应数据定义接口类型
+3. **创建API函数**：
+   - 使用`axiosInstance`发起请求
+   - 封装请求参数为标准格式
+   - 使用适当的HTTP方法（GET/POST/PUT/DELETE）
+4. **添加JSDoc注释**：说明API用途、参数和返回值
+5. **在模块索引中导出**：在`index.ts`中导出新API模块
+
+### 2. 流式API创建步骤
+
+对于需要流式响应的API（如聊天、实时数据等），使用`streamRequest`函数：
+
+```typescript
+import { streamRequest } from "@/utils/http";
+
+export interface ChatParams {
+  message: string;
+  sessionId: string;
+}
+
+export const streamChat = (
+  params: ChatParams,
+  onChunk: (chunk: any) => void,
+  onComplete: () => void,
+  onError: (error: any) => void,
+  signal: AbortSignal
+) => {
+  return streamRequest(
+    '/api/chat/stream',
+    params,
+    onChunk,
+    onComplete,
+    onError,
+    signal
+  );
+};
+```
+
+## API使用示例
+
+### 1. 标准API使用
+
+```typescript
+// 方式1: 直接导入API函数
+import { login } from '@/apis/modules/user';
+
+// 方式2: 通过命名空间导入
+import { userApi } from '@/apis';
+
+async function handleLogin() {
+  try {
+    // 方式1调用
+    const userData = await login({
+      username: 'test',
+      password: '123456'
+    });
+    console.log('登录成功:', userData);
+    
+    // 方式2调用
+    const result = await userApi.login({
+      username: 'test',
+      password: '123456'
+    });
+    console.log('登录成功:', result);
+  } catch (error) {
+    console.error('登录失败:', error);
+    // 错误已由拦截器统一处理，这里可以执行额外的错误处理逻辑
+  }
+}
+```
+
+### 2. 流式API使用
+
+```typescript
+import { ref } from 'vue';
+import { streamChat } from '@/apis/modules/chat';
+
+const messages = ref<string[]>([]);
+const isLoading = ref(false);
+const abortController = new AbortController();
+
+function sendStreamMessage() {
+  isLoading.value = true;
+  messages.value = [];
+  
+  streamChat(
+    { message: '你好', sessionId: '123' },
+    (chunk) => {
+      // 处理每个数据块
+      messages.value.push(chunk);
+    },
+    () => {
+      // 完成回调
+      isLoading.value = false;
+      console.log('Stream completed');
+    },
+    (error) => {
+      // 错误回调
+      isLoading.value = false;
+      console.error('Stream error:', error);
+    },
+    abortController.signal
+  );
+}
+
+function cancelRequest() {
+  abortController.abort();
+  isLoading.value = false;
+}
+```
+
+## 错误处理机制
+
+API请求的错误处理已在拦截器中统一配置：
+
+1. **请求错误**：网络错误、超时等请求错误
+2. **业务错误**：服务端返回的业务逻辑错误
+3. **认证错误**：Token失效或权限不足错误
+
+具体处理策略：
+
+- **Token过期**（errorCode=10001）：自动登出并跳转登录页
+- **静默错误**（errorCode=10002）：不显示错误消息，但依然reject Promise
+- **普通错误**：显示错误消息提示，并reject Promise
+- **网络错误**：显示通用错误消息
+
+## 最佳实践
+
+1. **参数检验**：在发送请求前检验参数完整性和合法性
+2. **统一导入**：优先使用命名空间方式导入API（如`userApi.login`）
+3. **异步处理**：使用`async/await`处理异步请求，配合`try/catch`捕获异常
+4. **取消请求**：长时间运行的请求应支持取消机制
+5. **缓存策略**：对不常变化的数据实施适当的缓存策略
+6. **代码复用**：对多处使用的API调用封装为Hooks或组合式函数
+
+## 注意事项
+
+1. 所有敏感信息（如密码）必须在客户端进行加密处理后再发送
+2. 避免在URL中携带敏感参数，优先使用POST请求的请求体传递
+3. 较大数据量的请求应考虑分页或懒加载策略
+4. API模块中不应包含业务逻辑处理，保持单一职责
+5. 正确使用HTTP状态码和自定义错误码，便于调试和错误处理
+

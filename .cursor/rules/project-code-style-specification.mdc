@@ -1,0 +1,706 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# 项目代码风格规范
+
+## 概述
+
+本项目采用基于Airbnb JavaScript风格指南的代码规范，确保代码的一致性、可读性和可维护性。本文档总结了项目中应遵循的核心编码规范和最佳实践。
+
+## 基本规范
+
+### 1. 类型
+
+- **原始类型**: 直接存取原始类型值
+  ```javascript
+  const foo = 1;
+  let bar = foo;
+  bar = 9;
+  console.log(foo, bar); // => 1, 9
+  ```
+
+- **复杂类型**: 通过引用存取复杂类型值
+  ```javascript
+  const foo = [1, 2];
+  const bar = foo;
+  bar[0] = 9;
+  console.log(foo[0], bar[0]); // => 9, 9
+  ```
+
+### 2. 引用
+
+- **使用`const`声明引用**: 避免使用`var`
+  ```javascript
+  // 不好
+  var a = 1;
+  
+  // 好
+  const a = 1;
+  ```
+
+- **如果引用需要重新分配，使用`let`**
+  ```javascript
+  // 不好
+  var count = 1;
+  if (true) {
+    count += 1;
+  }
+  
+  // 好
+  let count = 1;
+  if (true) {
+    count += 1;
+  }
+  ```
+
+- **`const`和`let`都是块级作用域**
+
+### 3. 对象
+
+- **使用字面量创建对象**
+  ```javascript
+  // 不好
+  const item = new Object();
+  
+  // 好
+  const item = {};
+  ```
+
+- **使用属性值简写**
+  ```javascript
+  const name = 'Luke';
+  
+  // 不好
+  const obj = {
+    name: name,
+  };
+  
+  // 好
+  const obj = {
+    name,
+  };
+  ```
+
+- **将简写的属性分组**
+  ```javascript
+  const user = {
+    id,
+    name,
+    age: 28,
+    height: 175,
+  };
+  ```
+
+- **使用对象展开运算符浅拷贝对象**
+  ```javascript
+  // 好
+  const original = { a: 1, b: 2 };
+  const copy = { ...original, c: 3 };
+  ```
+
+### 4. 数组
+
+- **使用字面量创建数组**
+  ```javascript
+  // 不好
+  const items = new Array();
+  
+  // 好
+  const items = [];
+  ```
+
+- **使用数组展开运算符`...`复制数组**
+  ```javascript
+  // 好
+  const itemsCopy = [...items];
+  ```
+
+- **使用数组方法而非循环**
+  ```javascript
+  // 好
+  [1, 2, 3].map((x) => x + 1);
+  ```
+
+### 5. 解构
+
+- **访问对象的多个属性时使用对象解构**
+  ```javascript
+  // 不好
+  function getFullName(user) {
+    const firstName = user.firstName;
+    const lastName = user.lastName;
+    return `${firstName} ${lastName}`;
+  }
+  
+  // 好
+  function getFullName(user) {
+    const { firstName, lastName } = user;
+    return `${firstName} ${lastName}`;
+  }
+  ```
+
+- **数组解构**
+  ```javascript
+  const arr = [1, 2, 3, 4];
+  
+  // 好
+  const [first, second] = arr;
+  ```
+
+### 6. 字符串
+
+- **使用单引号`''`定义字符串**
+  ```javascript
+  // 好
+  const name = 'Capt. Janeway';
+  ```
+
+- **超过100个字符的字符串应该分成多行使用字符串连接**
+
+- **使用模板字符串而非字符串连接**
+  ```javascript
+  // 不好
+  function sayHi(name) {
+    return 'How are you, ' + name + '?';
+  }
+  
+  // 好
+  function sayHi(name) {
+    return `How are you, ${name}?`;
+  }
+  ```
+
+### 7. 函数
+
+- **使用命名函数表达式代替函数声明**
+  ```javascript
+  // 不好
+  function foo() {
+    // ...
+  }
+  
+  // 好
+  const foo = function foo() {
+    // ...
+  };
+  ```
+
+- **立即调用的函数表达式(IIFE)使用括号包裹**
+  ```javascript
+  // 好
+  (function () {
+    console.log('Welcome to the Internet. Please follow me.');
+  }());
+  ```
+
+- **不要在非函数代码块(if, while等)中声明函数**
+
+- **不要使用`arguments`，使用剩余参数语法`...`代替**
+  ```javascript
+  // 好
+  function concatenateAll(...args) {
+    return args.join('');
+  }
+  ```
+
+- **使用默认参数语法，而不是修改函数参数**
+  ```javascript
+  // 好
+  function handleThings(opts = {}) {
+    // ...
+  }
+  ```
+
+### 8. 箭头函数
+
+- **当你必须使用函数表达式时(如传递匿名函数)，使用箭头函数**
+  ```javascript
+  // 好
+  [1, 2, 3].map((x) => x * x);
+  ```
+
+- **如果函数体只有一个表达式时，省略花括号和return**
+  ```javascript
+  // 好
+  [1, 2, 3].map(x => x * x);
+  ```
+
+- **如果函数体只有一个表达式并返回对象字面量，使用括号包裹对象**
+  ```javascript
+  // 好
+  () => ({
+    foo: 1
+  });
+  ```
+
+### 9. 类与构造函数
+
+- **总是使用`class`，避免直接操作`prototype`**
+  ```javascript
+  // 不好
+  function Queue(contents = []) {
+    this.queue = [...contents];
+  }
+  Queue.prototype.pop = function () {
+    // ...
+  };
+  
+  // 好
+  class Queue {
+    constructor(contents = []) {
+      this.queue = [...contents];
+    }
+    pop() {
+      // ...
+    }
+  }
+  ```
+
+- **类名总是使用PascalCase，实例名使用camelCase**
+
+- **避免重复的类成员**
+
+### 10. 模块
+
+- **使用ES模块系统(`import`/`export`)**
+  ```javascript
+  // 好
+  import { es6 } from './AirbnbStyleGuide';
+  export default es6;
+  ```
+
+- **不要使用通配符导入**
+  ```javascript
+  // 不好
+  import * as AirbnbStyleGuide from './AirbnbStyleGuide';
+  
+  // 好
+  import AirbnbStyleGuide from './AirbnbStyleGuide';
+  ```
+
+- **import语句放在所有语句之前**
+
+### 11. 属性
+
+- **访问属性时使用点符号**
+  ```javascript
+  const luke = {
+    jedi: true,
+    age: 28,
+  };
+  
+  // 好
+  const isJedi = luke.jedi;
+  ```
+
+- **当通过变量访问属性时使用中括号`[]`**
+  ```javascript
+  const luke = {
+    jedi: true,
+    age: 28,
+  };
+  
+  function getProp(prop) {
+    return luke[prop];
+  }
+  
+  const isJedi = getProp('jedi');
+  ```
+
+### 12. 变量
+
+- **使用`const`或`let`声明每一个变量或赋值**
+  ```javascript
+  // 不好
+  const items = getItems(),
+        goSportsTeam = true,
+        dragonball = 'z';
+  
+  // 好
+  const items = getItems();
+  const goSportsTeam = true;
+  const dragonball = 'z';
+  ```
+
+- **将所有`const`放在一起，然后将所有`let`放在一起**
+
+- **在需要的地方分配变量，但要放在合理的位置**
+
+### 13. 比较运算符与相等
+
+- **使用`===`和`!==`而非`==`和`!=`**
+
+- **条件语句使用强制类型转换遵循以下规则**:
+  - **对象计算为`true`**
+  - **Undefined计算为`false`**
+  - **Null计算为`false`**
+  - **数字计算为`false`如果为+0, -0, 或 NaN, 否则为`true`**
+  - **字符串计算为`false`如果为空字符串`''`, 否则为`true`**
+
+- **使用简写**
+  ```javascript
+  // 不好
+  if (name !== '') {
+    // ...
+  }
+  
+  // 好
+  if (name) {
+    // ...
+  }
+  ```
+
+### 14. 代码块
+
+- **使用大括号包裹多行代码块**
+  ```javascript
+  // 不好
+  if (test)
+    return false;
+  
+  // 好
+  if (test) {
+    return false;
+  }
+  ```
+
+- **如果使用`if`和`else`，将`else`放在`if`块的大括号关闭同一行**
+  ```javascript
+  // 好
+  if (test) {
+    thing1();
+    thing2();
+  } else {
+    thing3();
+  }
+  ```
+
+### 15. 注释
+
+- **使用`/** ... */`作为多行注释**
+
+- **使用`//`作为单行注释，将注释放在单独一行，在注释上方留一空行**
+  ```javascript
+  // 好
+  
+  // 这是一条注释
+  const active = true;
+  ```
+
+- **在注释开始添加`FIXME:`或`TODO:`标记问题或建议解决方案**
+  ```javascript
+  // FIXME: 应该使用传入的选项变量
+  
+  // TODO: 实现提交方法
+  ```
+
+### 16. 空格
+
+- **使用2个空格缩进**
+  ```javascript
+  // 好
+  function foo() {
+    const name = 'foo';
+    return name;
+  }
+  ```
+
+- **在大括号前放一个空格**
+  ```javascript
+  // 好
+  function test() {
+    console.log('test');
+  }
+  ```
+
+- **在控制语句的小括号前放一个空格**
+  ```javascript
+  // 好
+  if (isJedi) {
+    fight();
+  }
+  ```
+
+- **在操作符前后都放一个空格**
+  ```javascript
+  // 好
+  const x = y + 5;
+  ```
+
+- **文件末尾留一空行**
+
+### 17. 逗号
+
+- **行末逗号: 不需要**
+  ```javascript
+  // 好
+  const foo = {
+    bar: 'baz',
+    qux: 'quux'
+  };
+  ```
+
+- **额外的行末逗号: 可以接受(建议在多行数组或对象最后一个元素后添加)**
+  ```javascript
+  // 好
+  const foo = {
+    bar: 'baz',
+    qux: 'quux',
+  };
+  ```
+
+### 18. 分号
+
+- **使用分号**
+  ```javascript
+  // 好
+  const luke = {};
+  const leia = {};
+  [luke, leia].forEach((jedi) => jedi.father = 'vader');
+  ```
+
+### 19. 命名规范
+
+- **避免单字母命名，使用描述性命名**
+  ```javascript
+  // 不好
+  function q() {
+    // ...
+  }
+  
+  // 好
+  function query() {
+    // ...
+  }
+  ```
+
+- **使用驼峰命名法(camelCase)命名对象、函数和实例**
+  ```javascript
+  // 好
+  const thisIsMyObject = {};
+  function thisIsMyFunction() {}
+  ```
+
+- **使用帕斯卡命名法(PascalCase)命名构造函数或类**
+  ```javascript
+  // 好
+  class User {
+    constructor(options) {
+      this.name = options.name;
+    }
+  }
+  
+  const good = new User({
+    name: 'yup',
+  });
+  ```
+
+- **不要使用前置或后置下划线**
+  ```javascript
+  // 不好
+  this.__firstName__ = 'Panda';
+  this.firstName_ = 'Panda';
+  this._firstName = 'Panda';
+  
+  // 好
+  this.firstName = 'Panda';
+  ```
+
+- **不要保存`this`的引用，使用箭头函数或Function#bind**
+  ```javascript
+  // 好
+  function foo() {
+    return () => {
+      console.log(this);
+    };
+  }
+  ```
+
+- **文件名应与默认导出的名称完全匹配**
+  ```javascript
+  // file 1 contents
+  class CheckBox {
+    // ...
+  }
+  export default CheckBox;
+  
+  // file 2 contents
+  export default function fortyTwo() { return 42; }
+  
+  // file 3 contents
+  export default function insideDirectory() {}
+  
+  // in some other file
+  // 好
+  import CheckBox from './CheckBox'; // PascalCase import/export, camelCase filename
+  import fortyTwo from './fortyTwo'; // camelCase import/export, camelCase filename
+  import insideDirectory from './insideDirectory'; // camelCase import/export, camelCase directory name/implicit "index"
+  ```
+
+## Vue 特定规范
+
+### 1. 组件命名
+
+- **组件名应为多个单词，使用PascalCase**
+  ```javascript
+  // 好
+  export default {
+    name: 'TodoItem',
+    // ...
+  };
+  ```
+
+- **组件文件名应与组件名匹配，使用PascalCase**
+  ```
+  components/
+  |- TodoItem.vue
+  ```
+
+- **基础组件名应以特定前缀开头，如`Base`、`App`或`V`**
+  ```
+  components/
+  |- BaseButton.vue
+  |- BaseTable.vue
+  |- BaseIcon.vue
+  ```
+
+### 2. Props 定义
+
+- **Props 应该尽可能详细地定义**
+  ```javascript
+  // 好
+  props: {
+    status: {
+      type: String,
+      required: true,
+      validator: function (value) {
+        return ['syncing', 'synced', 'error'].indexOf(value) !== -1;
+      }
+    }
+  }
+  ```
+
+- **Prop 名使用camelCase声明，在模板中使用kebab-case**
+  ```javascript
+  // 在 JavaScript 中
+  props: {
+    greetingText: String
+  }
+  
+  // 在 HTML 中
+  <WelcomeMessage greeting-text="hi"/>
+  ```
+
+### 3. 组件结构
+
+- **使用一致的组件选项顺序**
+  ```javascript
+  export default {
+    name: '',
+    components: {},
+    props: {},
+    data() {},
+    computed: {},
+    watch: {},
+    created() {},
+    mounted() {},
+    methods: {}
+  };
+  ```
+
+- **使用`defineComponent`定义组件(Vue 3)**
+  ```javascript
+  import { defineComponent } from 'vue';
+  
+  export default defineComponent({
+    // 组件选项
+  });
+  ```
+
+### 4. TypeScript 使用
+
+- **在Vue组件中优先使用类型声明**
+  ```typescript
+  interface User {
+    id: number;
+    name: string;
+  }
+  
+  export default defineComponent({
+    props: {
+      user: {
+        type: Object as PropType<User>,
+        required: true
+      }
+    }
+  });
+  ```
+
+- **使用类型注解提高代码可读性**
+  ```typescript
+  const users: User[] = [];
+  
+  function getUser(id: number): User | undefined {
+    return users.find(user => user.id === id);
+  }
+  ```
+
+## 工具配置
+
+### ESLint
+
+本项目使用ESLint确保代码风格的一致性。关键配置如下：
+
+```javascript
+module.exports = {
+  extends: [
+    'airbnb-base',
+    'plugin:vue/vue3-recommended',
+    'plugin:@typescript-eslint/recommended',
+    'prettier'
+  ],
+  parser: 'vue-eslint-parser',
+  parserOptions: {
+    parser: '@typescript-eslint/parser',
+    ecmaVersion: 2020,
+    sourceType: 'module'
+  },
+  // 其他规则...
+};
+```
+
+### Prettier
+
+使用Prettier格式化代码，配置如下：
+
+```javascript
+// .prettierrc.js
+module.exports = {
+  singleQuote: true,
+  semi: true,
+  tabWidth: 2,
+  trailingComma: 'none',
+  printWidth: 100,
+  bracketSpacing: true,
+  arrowParens: 'avoid'
+};
+```
+
+## 最佳实践
+
+1. **保持简单**: 代码应当简洁明了，避免不必要的复杂性
+2. **自解释代码**: 编写自解释的代码，减少不必要的注释
+3. **一致性**: 团队内保持一致的编码风格
+4. **性能意识**: 编写代码时考虑性能影响
+5. **可测试性**: 设计代码时考虑单元测试的便利性
+6. **模块化**: 将功能拆分为独立、可复用的模块
+7. **代码审查**: 通过代码审查保证代码质量和风格一致性
+
+## 参考资料
+
+- [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript)
+- [Vue Style Guide](https://vuejs.org/style-guide/)
+
+- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
