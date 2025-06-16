@@ -7,7 +7,8 @@ import Components from 'unplugin-vue-components/vite' //自动导入和注册您
 import { ElementPlusResolver, VantResolver } from 'unplugin-vue-components/resolvers'
 import {
   createStyleImportPlugin,
-  ElementPlusResolve
+  ElementPlusResolve,
+  VantResolve
 } from 'vite-plugin-style-import'
 import { visualizer } from 'rollup-plugin-visualizer'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
@@ -50,11 +51,8 @@ export default defineConfig(({ mode }) => {
         resolves: [
           ElementPlusResolve(),
           // 对于 Vant，需要自定义解析函数
-          {
-            libraryName: 'vant',
-            esModule: true,
-            resolveStyle: (name) => `vant/es/${name}/style`
-          }
+          // 使用VantResolve替代自定义解析函数
+          VantResolve()
         ],
       }),
 
@@ -80,7 +78,7 @@ export default defineConfig(({ mode }) => {
       env.VITE_NODE_ENV === 'production' && imagetools(),
     ].filter(Boolean), // 过滤掉无效插件,
     optimizeDeps: {
-      include: ['lodash-es', 'dayjs'], // 预构建指定的依赖项
+      include: ['lodash-es', 'dayjs', 'vant'], // 预构建指定的依赖项
     },
 
     build: {

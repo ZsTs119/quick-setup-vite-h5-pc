@@ -1,227 +1,133 @@
 <template>
   <div class="home-container">
-    <el-row :gutter="20">
-      <el-col :span="24">
-        <el-card class="welcome-card">
-          <div class="user-welcome">
-            <h1>欢迎回来，{{ userStore.userInfo?.username }}</h1>
-            <p>您已成功登录 Quick Setup 示例系统</p>
-            <el-button type="danger" @click="handleLogout" size="small"
-              >退出登录</el-button
-            >
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <h2 class="components-title">组件示例展示</h2>
-
-    <div class="section">
-      <h2 class="section-title">Element Plus 组件</h2>
-      <div class="component-row">
-        <el-button>默认按钮</el-button>
-        <el-button type="primary">主要按钮</el-button>
-        <el-button type="success">成功按钮</el-button>
-        <el-button type="info">信息按钮</el-button>
-        <el-button type="warning">警告按钮</el-button>
-        <el-button type="danger">危险按钮</el-button>
-      </div>
-
-      <div class="component-row">
-        <el-tag>标签一</el-tag>
-        <el-tag type="success">标签二</el-tag>
-        <el-tag type="info">标签三</el-tag>
-        <el-tag type="warning">标签四</el-tag>
-        <el-tag type="danger">标签五</el-tag>
-      </div>
-
-      <div class="component-row">
-        <el-input v-model="inputValue" placeholder="请输入内容"></el-input>
-        <el-switch v-model="switchValue" />
-      </div>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">Vant 组件</h2>
-      <div class="component-row">
-        <van-button type="primary">主要按钮</van-button>
-        <van-button type="success">成功按钮</van-button>
-        <van-button type="default">默认按钮</van-button>
-        <van-button type="danger">危险按钮</van-button>
-        <van-button type="warning">警告按钮</van-button>
-      </div>
-
-      <div class="component-row">
-        <van-switch v-model="switchValue" />
-        <van-stepper v-model="stepperValue" />
-      </div>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">图标组件</h2>
-      <div class="icon-display">
-        <div class="svg-icon-wrapper">
-          <svg-icon icon-class="about" class="svg_icon" />
-          <span class="icon-label">SVG图标</span>
-        </div>
-
-        <div class="iconfont-wrapper">
-          <incon-fent type="info" class="iconfont" />
-          <span class="icon-label">Iconfont图标</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <h2 class="section-title">API调用示例</h2>
-      <div class="component-row">
-        <el-button type="primary" @click="makeApiRequest" :loading="loading"
-          >获取新闻头条</el-button
-        >
-        <el-button
-          type="warning"
-          @click="makeStreamRequest"
-          :loading="streamLoading"
-          >发起流式请求</el-button
-        >
-        <el-button
-          type="danger"
-          @click="cancelStreamRequest"
-          :disabled="!streamLoading"
-          >取消流式请求</el-button
+    <!-- 顶部欢迎区 -->
+    <el-card class="welcome-card">
+      <div class="user-welcome">
+        <h1>欢迎回来，{{ userStore.userInfo?.username }}</h1>
+        <p>您已成功登录 Quick Setup 示例系统</p>
+        <el-button type="danger" @click="handleLogout" size="small"
+          >退出登录</el-button
         >
       </div>
+    </el-card>
 
-      <!-- 新闻列表展示 -->
-      <div v-if="newsData.length > 0" class="news-list">
-        <h3>最新新闻</h3>
-        <el-card
-          v-for="(news, index) in newsData"
-          :key="index"
-          class="news-item"
+    <!-- 博客式左右布局 -->
+    <div class="blog-layout">
+      <!-- 左侧导航菜单 -->
+      <div class="sidebar">
+        <el-menu
+          :default-active="activeMenu"
+          class="sidebar-menu"
+          @select="handleMenuSelect"
+          :router="false"
         >
-          <div class="news-header">
-            <h4 class="news-title">{{ news.title }}</h4>
-            <span class="news-source">{{ news.source }}</span>
-          </div>
-          <p class="news-description">{{ news.description }}</p>
-          <div class="news-footer">
-            <span class="news-category">{{ news.category }}</span>
-            <span class="news-date">{{ formatDate(news.published_at) }}</span>
-          </div>
-          <a :href="news.url" target="_blank" class="news-link">阅读原文</a>
-        </el-card>
+          <el-menu-item index="element">
+            <el-icon><el-icon-menu /></el-icon>
+            <span>Element Plus 组件</span>
+          </el-menu-item>
+          <el-menu-item index="vant">
+            <el-icon><el-icon-mobile-phone /></el-icon>
+            <span>Vant 组件</span>
+          </el-menu-item>
+          <el-menu-item index="icon">
+            <el-icon><el-icon-picture-rounded /></el-icon>
+            <span>图标组件</span>
+          </el-menu-item>
+          <el-menu-item index="api">
+            <el-icon><el-icon-connection /></el-icon>
+            <span>API调用示例</span>
+          </el-menu-item>
+        </el-menu>
       </div>
 
-      <div class="code-block" v-if="apiResponse && !newsData.length">
-        <h3>响应结果:</h3>
-        <pre>{{ apiResponse }}</pre>
+      <!-- 右侧内容区 -->
+      <div class="content">
+        <component :is="activeComponent" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, shallowRef, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
-import { newsApi } from "@/apis";
-import type { NewsItem } from "@/apis/modules/news";
+import {
+  Menu as ElIconMenu,
+  Cellphone as ElIconMobilePhone,
+  PictureRounded as ElIconPictureRounded,
+  Connection as ElIconConnection,
+} from "@element-plus/icons-vue";
+
+// 导入子组件
+import ElementDemo from "./components/ElementDemo.vue";
+import VantDemo from "./components/VantDemo.vue";
+import IconDemo from "./components/IconDemo.vue";
+import ApiDemo from "./components/ApiDemo.vue";
 
 const router = useRouter();
 const userStore = useUserStore();
 
-// 示例数据
-const inputValue = ref("");
-const switchValue = ref(true);
-const stepperValue = ref(1);
+// 主题切换
+const isDarkMode = ref(false);
 
-// API请求状态
-const loading = ref(false);
-const streamLoading = ref(false);
-const apiResponse = ref("");
-const newsData = ref<NewsItem[]>([]);
+// 当前激活的菜单项
+const activeMenu = ref("element");
 
-// 用于取消流式请求的控制器
-const controller = new AbortController();
+// 使用shallowRef包装组件提高性能
+const ElementDemoComponent = shallowRef(ElementDemo);
+const VantDemoComponent = shallowRef(VantDemo);
+const IconDemoComponent = shallowRef(IconDemo);
+const ApiDemoComponent = shallowRef(ApiDemo);
 
+// 根据当前激活的菜单项显示对应组件
+const activeComponent = computed(() => {
+  switch (activeMenu.value) {
+    case "element":
+      return ElementDemoComponent.value;
+    case "vant":
+      return VantDemoComponent.value;
+    case "icon":
+      return IconDemoComponent.value;
+    case "api":
+      return ApiDemoComponent.value;
+    default:
+      return ElementDemoComponent.value;
+  }
+});
+
+// 菜单选择处理
+const handleMenuSelect = (index: string) => {
+  activeMenu.value = index;
+};
+
+// 切换主题（这里只是示例，实际应该调用主题切换相关方法）
+const toggleTheme = () => {
+  // 使用document.documentElement设置数据主题
+  if (isDarkMode.value) {
+    document.documentElement.setAttribute("data-theme", "dark");
+  } else {
+    document.documentElement.setAttribute("data-theme", "light");
+  }
+
+  console.log("切换主题:", isDarkMode.value ? "暗色模式" : "亮色模式");
+};
+
+// 登出处理
 const handleLogout = () => {
   userStore.logout();
   router.push("/login");
-};
-
-// 格式化日期
-const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  const date = new Date(dateString);
-  return date.toLocaleDateString("zh-CN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-// 发起常规API请求
-const makeApiRequest = async () => {
-  loading.value = true;
-  apiResponse.value = "";
-  newsData.value = [];
-
-  try {
-    // 使用新闻API获取新闻头条
-    const response = await newsApi.fetchNewsHeadlines();
-    apiResponse.value = JSON.stringify(response, null, 2);
-
-    // 如果有数据，更新新闻列表
-    if (response && response.data && Array.isArray(response.data)) {
-      newsData.value = response.data;
-    }
-  } catch (error) {
-    apiResponse.value = JSON.stringify(error, null, 2);
-  } finally {
-    loading.value = false;
-  }
-};
-
-// 发起流式请求
-const makeStreamRequest = () => {
-  streamLoading.value = true;
-  apiResponse.value = "";
-
-  // 模拟流式请求，实际上使用定时器模拟数据流
-  let count = 0;
-  const interval = setInterval(() => {
-    apiResponse.value += `模拟流式数据块 ${++count}\n`;
-
-    if (count >= 10) {
-      clearInterval(interval);
-      streamLoading.value = false;
-      apiResponse.value += "\n[请求完成]";
-    }
-  }, 500);
-
-  // 保存清除函数以便取消
-  controller.abort = () => {
-    clearInterval(interval);
-  };
-};
-
-// 取消流式请求
-const cancelStreamRequest = () => {
-  controller.abort();
-  streamLoading.value = false;
-  apiResponse.value += "\n[请求已取消]";
 };
 </script>
 
 <style scoped lang="scss">
 .home-container {
   padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 
   .welcome-card {
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 
     .user-welcome {
       text-align: center;
@@ -238,134 +144,59 @@ const cancelStreamRequest = () => {
     }
   }
 
-  .components-title {
-    margin: 30px 0 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--primary-color);
-    color: var(--text-primary);
-  }
-
-  .section {
-    margin-bottom: 30px;
-
-    .section-title {
-      font-size: 18px;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border-light);
-      color: var(--text-primary);
-    }
-
-    .component-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;
-      margin-bottom: 20px;
-      align-items: center;
-    }
-
-    .code-block {
-      background-color: var(--bg-color-secondary);
-      padding: 16px;
-      border-radius: 4px;
-      margin-top: 16px;
-
-      pre {
-        margin: 0;
-        white-space: pre-wrap;
-        color: var(--text-regular);
-      }
-    }
-  }
-
-  .icon-display {
+  .blog-layout {
     display: flex;
-    align-items: center;
-    gap: 20px;
-    margin-bottom: 20px;
+    gap: 24px;
+    min-height: 800px;
 
-    .svg-icon-wrapper,
-    .iconfont-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    // 左侧边栏
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
 
-      .svg_icon,
-      .iconfont {
-        position: relative;
-        font-size: 35px;
-        color: var(--primary-color);
+      .sidebar-menu {
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       }
 
-      .icon-label {
-        margin-top: 8px;
-        font-size: 12px;
+      .theme-switch {
+        margin-top: 20px;
+        padding: 16px;
+        background-color: var(--bg-color-secondary);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+
+        .theme-label {
+          margin-left: 12px;
+          font-size: 14px;
+          color: var(--text-secondary);
+        }
       }
+    }
+
+    // 右侧内容区
+    .content {
+      flex: 1;
+      background-color: var(--bg-color);
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
     }
   }
+}
 
-  // 新闻列表样式
-  .news-list {
-    margin-top: 20px;
+// 响应式调整
+@media (max-width: 768px) {
+  .home-container {
+    padding: 12px;
 
-    h3 {
-      margin-bottom: 16px;
-      color: var(--text-primary);
-    }
+    .blog-layout {
+      flex-direction: column;
 
-    .news-item {
-      margin-bottom: 16px;
-      transition: transform 0.3s;
-
-      &:hover {
-        transform: translateY(-3px);
-      }
-
-      .news-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 8px;
-
-        .news-title {
-          margin: 0;
-          font-size: 18px;
-          color: var(--text-primary);
-          flex: 1;
-        }
-
-        .news-source {
-          padding: 2px 6px;
-          font-size: 12px;
-          border-radius: 4px;
-          background-color: var(--primary-light);
-          color: var(--primary-color);
-        }
-      }
-
-      .news-description {
-        color: var(--text-regular);
-        margin: 0 0 16px;
-        line-height: 1.5;
-      }
-
-      .news-footer {
-        display: flex;
-        justify-content: space-between;
-        font-size: 12px;
-        color: var(--text-secondary);
-        margin-bottom: 8px;
-      }
-
-      .news-link {
-        display: inline-block;
-        color: var(--primary-color);
-        text-decoration: none;
-        font-size: 14px;
-
-        &:hover {
-          text-decoration: underline;
-        }
+      .sidebar {
+        width: 100%;
+        margin-bottom: 16px;
       }
     }
   }

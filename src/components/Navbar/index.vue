@@ -14,7 +14,7 @@
         router
       >
         <el-menu-item index="/">首页</el-menu-item>
-        <el-menu-item index="/settings">设置</el-menu-item>
+        <!-- <el-menu-item index="/settings">设置</el-menu-item> -->
       </el-menu>
     </div>
 
