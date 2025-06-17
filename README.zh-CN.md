@@ -1,4 +1,4 @@
-**Read this in other languages: [English](README.md), [中文](README.zh-CN.md).**
+**其他语言版本: [English](README.md), [中文](README.zh-CN.md).**
 
 # vue3-vite-multi-platform-template
 
