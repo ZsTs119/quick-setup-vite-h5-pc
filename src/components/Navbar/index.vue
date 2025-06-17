@@ -2,7 +2,7 @@
   <el-header class="navbar">
     <div class="logo-container">
       <router-link to="/">
-        <h1 class="logo">Quick Setup</h1>
+        <h1 class="logo">Vite-H5-PC-Template</h1>
       </router-link>
     </div>
 
