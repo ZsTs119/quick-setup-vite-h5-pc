@@ -1,3 +1,5 @@
+**Read this in other languages: [English](README.md), [中文](README.zh-CN.md).**
+
 # vue3-vite-multi-platform-template
 
 Vue3 Multi-platform Development Scaffold (H5/PC)
