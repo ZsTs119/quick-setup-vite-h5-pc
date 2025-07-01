@@ -1,4 +1,4 @@
-# vue3-vite-multi-platform-template
+# vue3-multi-platform
 
 <div align="center">
   
@@ -7,7 +7,12 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
 ![Element Plus](https://img.shields.io/badge/Element_Plus-2.7-409eff)
 ![Vant](https://img.shields.io/badge/Vant-4.9-4fc08d)
+![Pinia](https://img.shields.io/badge/Pinia-2.1-yellow)
 ![License](https://img.shields.io/badge/License-MIT-green)
+![Multi-Platform](https://img.shields.io/badge/Multi--Platform-H5%2FPC-orange)
+![Dark Mode](https://img.shields.io/badge/Dark%20Mode-Support-black)
+![Auto-Import](https://img.shields.io/badge/Auto--Import-Ready-lightblue)
+![Theme System](https://img.shields.io/badge/Theme%20System-Customizable-purple)
 
 </div>
 
@@ -17,7 +22,7 @@
 
 </div>
 
-> **A powerful, out-of-the-box Vue 3 + Vite + TypeScript multi-platform application development scaffold, supporting both H5 and PC development。**
+> **Vue3 Multi-terminal Unified Development Framework - Quickly Build Cross-platform Applications, Saving time and effort.**
 
 ## 🚀 Features
 
