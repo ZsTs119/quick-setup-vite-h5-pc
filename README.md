@@ -1,233 +1,253 @@
-# vue3-vite-multi-platform-template
+# vue3-multi-platform Vue3 多端统一开发框架
 
-Vue3 Multi-platform Development Scaffold (H5/PC)
+<div align="center">
+  
+![Vue](https://img.shields.io/badge/Vue-3.5-brightgreen)
+![Vite](https://img.shields.io/badge/Vite-5.2-646CFF)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)
+![Element Plus](https://img.shields.io/badge/Element_Plus-2.7-409eff)
+![Vant](https://img.shields.io/badge/Vant-4.9-4fc08d)
+![Pinia](https://img.shields.io/badge/Pinia-2.1-yellow)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Multi-Platform](https://img.shields.io/badge/Multi--Platform-H5%2FPC-orange)
+![Dark Mode](https://img.shields.io/badge/Dark%20Mode-Support-black)
+![Auto-Import](https://img.shields.io/badge/Auto--Import-Ready-lightblue)
+![Theme System](https://img.shields.io/badge/Theme%20System-Customizable-purple)
 
-A powerful, out-of-the-box Vue 3 + Vite + TypeScript multi-platform application development scaffold, supporting both H5 and PC development.
+</div>
 
-## 🚀 Features
+<div align="center">
 
-- **Modern Tech Stack**: Vite 5.2 + Vue 3.5 + TypeScript 5.3 + Pinia 2.1
-- **Multi-platform Adaptation**: One codebase for both H5 and PC platforms
-- **UI Component Libraries**: Element Plus 2.7 (PC) + Vant 4.9 (Mobile)
-- **Auto Import**: Component and API auto-import, no manual imports needed
-- **Theme System**: Support for multiple themes with built-in dark mode
-- **Permission Control**: Complete login authentication and permission management
-- **State Management**: Pinia-based state management with persistence support
-- **Request Encapsulation**: Axios request encapsulation, supporting both regular and streaming requests
-- **Security Protection**: Built-in request signing and device fingerprint identification
-- **Icon System**: SVG icons and Iconfront icon component encapsulation
-- **Custom Hooks**: Common functionalities encapsulated as Hooks
-- **Build Optimization**: Automatic code splitting, compression, and optimization
-- **Cursor Rules**: Detailed project specification documentation, supporting Cursor AI development assistant to intelligently understand project architecture and development standards
+[English](./README.en.md) | [简体中文](./README.md)
 
-## 📁 Directory Structure
+</div>
+
+> **Vue3 多端统一开发框架 - 快速构建跨平台应用，省时省力"。**
+
+## 🚀 特性一览
+
+- **现代技术栈**：Vite 5.2 + Vue 3.5 + TypeScript 5.3 + Pinia 2.1
+- **多端适配**：一套代码，同时支持 H5 和 PC 端
+- **UI 组件库**：Element Plus 2.7 (PC 端) + Vant 4.9 (移动端)
+- **自动导入**：组件和 API 自动导入，无需手动 import
+- **主题系统**：支持多主题切换，内置暗黑模式
+- **权限控制**：完整的登录认证和权限管理
+- **状态管理**：基于 Pinia 的状态管理，支持持久化
+- **请求封装**：Axios 请求封装，支持常规请求和流式请求
+- **安全防护**：内置请求签名和设备指纹识别
+- **图标系统**：SVG 图标和 Iconfront 图标组件封装
+- **自定义 Hooks**：常用功能封装为 Hooks
+- **构建优化**：自动代码分割、压缩和优化
+- **Cursor 规则**：提供详细的项目规范文档，支持 Cursor AI 开发助手智能理解项目架构和开发规范
+
+## 📁 目录结构
 
 ```
 src/
-├── apis/                # API interfaces
-│   ├── modules/        # APIs organized by modules
-│   │   ├── user.ts     # User-related APIs
-│   │   └── script.ts   # Script-related APIs
-│   ├── types/          # API type definitions
-│   └── index.ts        # Unified exports
-├── assets/             # Static resources
-│   └── icons/          # Icon resources
-├── components/         # Public components
-│   ├── SvgIcon/       # SVG icon component
-│   ├── InconFent/     # Iconfront icon component
-│   └── ThemeSwitch/   # Theme switch component
-├── hooks/              # Custom Hooks
-│   ├── useNProgress.ts # Progress bar Hook
-│   └── useThemeTransition.ts # Theme transition animation Hook
-├── router/             # Route configuration
-│   ├── home/          # Home route module
-│   ├── login/         # Login route module
-│   └── index.ts       # Main route file
-├── stores/             # State management
-│   ├── theme.ts       # Theme state
-│   ├── token.ts       # Token management
-│   ├── user.ts        # User information
-│   └── login.ts       # Login state
-├── styles/             # Global styles
-│   ├── themes/        # Theme-related
-│   │   └── variables.scss # Theme variable definitions
-│   ├── transitions/   # Transition animations
-│   │   └── theme.scss # Theme switching animation
-│   └── mixins/        # Style mixins
-├── utils/             # Utility functions
-│   ├── http/         # HTTP request encapsulation
-│   ├── device.ts     # Device information
-│   └── index.ts      # Utility unified exports
-└── views/            # Page components
-    ├── login/        # Login page
-    ├── home/         # Home page
-    ├── settings/     # Settings page
-    └── error/        # Error page
+├── apis/                # API 接口
+│   ├── modules/        # 按模块组织的API
+│   │   ├── user.ts     # 用户相关API
+│   │   └── script.ts   # 脚本相关API
+│   ├── types/          # API类型定义
+│   └── index.ts        # 统一导出
+├── assets/             # 静态资源
+│   └── icons/          # 图标资源
+├── components/         # 公共组件
+│   ├── SvgIcon/       # SVG图标组件
+│   ├── InconFent/     # Iconfront图标组件
+│   └── ThemeSwitch/   # 主题切换组件
+├── hooks/              # 自定义Hooks
+│   ├── useNProgress.ts # 进度条Hook
+│   └── useThemeTransition.ts # 主题切换过渡动画Hook
+├── router/             # 路由配置
+│   ├── home/          # 首页路由模块
+│   ├── login/         # 登录路由模块
+│   └── index.ts       # 路由主文件
+├── stores/             # 状态管理
+│   ├── theme.ts       # 主题状态
+│   ├── token.ts       # Token管理
+│   ├── user.ts        # 用户信息
+│   └── login.ts       # 登录状态
+├── styles/             # 全局样式
+│   ├── themes/        # 主题相关
+│   │   └── variables.scss # 主题变量定义
+│   ├── transitions/   # 过渡动画
+│   │   └── theme.scss # 主题切换动画
+│   └── mixins/        # 样式混入
+├── utils/             # 工具函数
+│   ├── http/         # HTTP请求封装
+│   ├── device.ts     # 设备信息
+│   └── index.ts      # 工具统一导出
+└── views/            # 页面组件
+    ├── login/        # 登录页面
+    ├── home/         # 首页
+    ├── settings/     # 设置页面
+    └── error/        # 错误页面
 ```
 
-## 📚 Project Specification Guide
+## 📚 项目规范指南
 
-The project incorporates seven core specifications to ensure consistency and high-quality code output during development:
+项目内置了七大核心规范，确保开发过程中的一致性和高质量代码输出：
 
-### 1. Project Introduction Specification
+### 1. 项目介绍规范
 
-The project is built on a modern frontend technology stack, with core technologies including:
+项目基于现代前端技术栈构建，核心技术包括：
 
-- Vue 3.5.x, TypeScript 5.3.x, Vite 5.2.x
-- State Management: Pinia 2.1.x (with persistence)
-- UI Component Libraries: Element Plus 2.7.x (PC), Vant 4.9.x (Mobile)
-- Utility Libraries: Axios, Lodash-es, TypeScript-MD5, etc.
+- Vue 3.5.x、TypeScript 5.3.x、Vite 5.2.x
+- 状态管理：Pinia 2.1.x (含持久化)
+- UI 组件库：Element Plus 2.7.x (PC 端)、Vant 4.9.x (移动端)
+- 工具库：Axios、Lodash-es、TypeScript-MD5 等
 
-### 2. Project Structure Specification
+### 2. 项目结构规范
 
-The project adopts a modular, hierarchical directory structure, mainly including:
+项目采用模块化、分层次的目录结构，主要包括：
 
-- `apis`: API interface layer, organized by business modules
-- `components`: Global public components
-- `hooks`: Custom Hooks
-- `router`: Route configuration, modular management
-- `stores`: Pinia state management
-- `styles`: Global styles and theme system
-- `utils`: Utility functions
-- `views`: Page components
+- `apis`: API 接口层，按业务模块组织
+- `components`: 全局公共组件
+- `hooks`: 自定义 Hooks
+- `router`: 路由配置，模块化管理
+- `stores`: Pinia 状态管理
+- `styles`: 全局样式和主题系统
+- `utils`: 工具函数
+- `views`: 页面组件
 
-### 3. API Usage Specification
+### 3. API 使用规范
 
-API requests use unified encapsulation, including authentication, request signing, error handling, and other mechanisms:
+API 请求采用统一封装，包含权限认证、请求签名、错误处理等机制：
 
-- Request Process: Parameter Preparation → Authentication → Request Signing → Device Fingerprint → Request Sending → Response Processing
-- API Definition Standards: Grouped by business modules, strict type definitions, unified naming conventions
-- Support for both regular and streaming request methods
+- 请求流程：参数准备 → 权限验证 → 请求签名 → 设备指纹 → 请求发送 → 响应处理
+- API 定义规范：按业务模块分组、类型严格定义、命名规范统一
+- 支持常规请求和流式请求两种方式
 
-### 4. Code Comment Specification
+### 4. 代码注释规范
 
-Uses JSDoc-style commenting standards:
+采用 JSDoc 风格的注释规范：
 
-- Functions and Methods: Including description, parameter explanation, return value explanation, examples
-- Classes and Interfaces: Including description, property explanation
-- Complex Business Logic: Step-by-step explanation
-- Special Handling or Edge Cases: Detailed explanation of reasons and processing methods
+- 函数和方法：包含描述、参数说明、返回值说明、示例
+- 类和接口：包含描述、属性说明
+- 复杂业务逻辑：分步骤说明
+- 特殊处理或边界条件：详细说明原因和处理方式
 
-### 5. Core Hooks and Methods
+### 5. 核心 Hooks 与方法
 
-The project encapsulates multiple core Hooks and utility methods:
+项目封装了多个核心 Hooks 和工具方法：
 
-- User Authentication and Permissions: `useUserStore`, `useTokenStore`
-- Theme Management: `useThemeStore`, `useThemeTransition`
-- HTTP Requests: Standard request and streaming request encapsulation
-- Progress Bar: `useNProgress`
-- Security Tools: Device fingerprint, request signing
+- 用户认证与权限：`useUserStore`、`useTokenStore`
+- 主题管理：`useThemeStore`、`useThemeTransition`
+- HTTP 请求：标准请求和流式请求封装
+- 进度条：`useNProgress`
+- 安全工具：设备指纹、请求签名
 
-### 6. New Module Specification
+### 6. 新增模块规范
 
-Standard process for adding new feature modules:
+添加新功能模块的标准流程：
 
-- Create API Module: Define interfaces, parameters, and response types
-- Create View Components: Page components and private components
-- Create Route Configuration: Define routes, permissions, and meta information
-- Create State Management: Define State, Getters, and Actions
+- 创建 API 模块：定义接口、参数和响应类型
+- 创建视图组件：页面组件及私有组件
+- 创建路由配置：定义路由、权限和元信息
+- 创建状态管理：定义 State、Getters 和 Actions
 
-### 7. Code Style Specification
+### 7. 代码风格规范
 
-Based on Airbnb JavaScript Style Guide, combined with Vue Official Style Guide:
+基于 Airbnb JavaScript 风格指南，结合 Vue 官方风格指南：
 
-- Variables and References: Prefer const, use let when reassignment is needed
-- Functions: Prefer arrow functions, use parameter default values
-- Components: Use PascalCase naming, detailed Props definitions
-- TypeScript: Strict type definitions, improve code readability
-- Naming Conventions: Descriptive naming, follow naming conventions
+- 变量与引用：优先使用 const，需要重新赋值时使用 let
+- 函数：优先使用箭头函数，使用参数默认值
+- 组件：使用 PascalCase 命名，详细定义 Props
+- TypeScript：严格类型定义，提高代码可读性
+- 命名规范：描述性命名，遵循命名约定
 
-## 🛠️ Quick Start
+## 🛠️ 快速开始
 
-### Install Dependencies
+### 安装依赖
 
 ```bash
 pnpm install
 ```
 
-### Development Environment
+### 开发环境
 
 ```bash
-# PC development
+# PC端开发
 pnpm dev
 
-# H5 development
+# H5端开发
 pnpm dev:h5
 ```
 
-### Production Environment
+### 生产环境
 
 ```bash
-# PC production environment
+# PC端生产环境
 pnpm pro
 
-# H5 production environment
+# H5端生产环境
 pnpm proH5
 ```
 
-### Build Project
+### 构建项目
 
 ```bash
-# PC build (development environment)
+# PC端构建(开发环境)
 pnpm build:dev
 
-# H5 build (development environment)
+# H5端构建(开发环境)
 pnpm build:dev:h5
 
-# PC build (production environment)
+# PC端构建(生产环境)
 pnpm build:prod
 
-# H5 build (production environment)
+# H5端构建(生产环境)
 pnpm build:prod:h5
 ```
 
-## 📘 Development Guide
+## 📘 开发指南
 
-### Theme System
+### 主题系统
 
-The project includes a powerful theme system, supporting multiple theme switching and smooth transition animations.
+项目内置了强大的主题系统，支持多主题切换和平滑过渡动画。
 
-#### 1. Theme Configuration
+#### 1. 主题配置
 
-Theme variables are defined in `src/styles/themes/variables.scss`:
+主题变量定义在 `src/styles/themes/variables.scss` 中：
 
 ```scss
-// Basic variable definitions
+// 基础变量定义
 $themes: (
   light: (
-    // Light theme
+    // 亮色主题
     --primary-color: #409eff,
     --bg-color: #ffffff,
     --text-primary: #303133,
-    // More variables...
+    // 更多变量...
   ),
   dark: (
-    // Dark theme
+    // 暗色主题
     --primary-color: #409eff,
     --bg-color: #141414,
     --text-primary: #ffffff,
-    // More variables...
+    // 更多变量...
   ),
-  // You can add more custom themes...
+  // 可以添加更多自定义主题...
   red:
     (
       --primary-color: #f56c6c,
-      // Other variables for red theme...
+      // 红色主题的其他变量...
     ),
 );
 ```
 
-#### 2. Using Theme Switch Component
+#### 2. 使用主题切换组件
 
-Import the `ThemeSwitch` component in the page:
+在页面中引入 `ThemeSwitch` 组件：
 
 ```vue
 <template>
   <div class="container">
-    <!-- Theme switch button -->
+    <!-- 主题切换按钮 -->
     <ThemeSwitch />
 
-    <!-- Page content -->
+    <!-- 页面内容 -->
   </div>
 </template>
 
@@ -235,118 +255,118 @@ Import the `ThemeSwitch` component in the page:
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue";
 import { useThemeStore } from "@/stores/theme";
 
-// Get theme state management instance
+// 获取主题状态管理实例
 const themeStore = useThemeStore();
 
-// Initialize theme on component mount
+// 在组件挂载时初始化主题
 onMounted(() => {
   themeStore.initTheme();
 });
 </script>
 ```
 
-#### 3. Applying Theme in Parent Container
+#### 3. 在父容器中应用主题
 
-Apply theme variables and transition animations in the parent container:
+在父容器中应用主题变量和过渡动画：
 
 ```vue
 <template>
   <div class="app-container">
-    <!-- Page content -->
+    <!-- 页面内容 -->
   </div>
 </template>
 
 <style lang="scss">
-// Import theme transition animation styles
+// 导入主题过渡动画样式
 @import "@/styles/transitions/theme.scss";
 
 .app-container {
-  // Use theme mixin
+  // 使用主题混入
   @include useTheme;
 
-  // Use theme variables
+  // 使用主题变量
   background: var(--bg-color);
   color: var(--text-primary);
 }
 </style>
 ```
 
-#### 4. Theme State Management
+#### 4. 主题状态管理
 
-Use `useThemeStore` to manually control the theme:
+通过 `useThemeStore` 可以手动控制主题：
 
 ```typescript
 import { useThemeStore } from "@/stores/theme";
 
 const themeStore = useThemeStore();
 
-// Switch to dark theme
+// 切换到暗色主题
 themeStore.setTheme("dark");
 
-// Switch to light theme
+// 切换到亮色主题
 themeStore.setTheme("light");
 
-// Switch to custom theme
+// 切换到自定义主题
 themeStore.setTheme("red");
 
-// Toggle dark/light mode
+// 切换暗黑/亮色模式
 themeStore.toggleDarkMode();
 
-// Get current theme
+// 获取当前主题
 console.log(themeStore.currentTheme);
 
-// Check if dark mode
+// 检查是否为暗黑模式
 console.log(themeStore.isDarkMode);
 ```
 
-#### 5. Theme Transition Animation
+#### 5. 主题过渡动画
 
-The project uses View Transitions API to implement smooth theme switching animations, encapsulated through the `useThemeTransition` Hook:
+项目使用 View Transitions API 实现平滑的主题切换动画，通过 `useThemeTransition` Hook 封装：
 
 ```typescript
 import { useThemeTransition } from "@/hooks/useThemeTransition";
 
 const { handleThemeChange } = useThemeTransition();
 
-// Switch theme and apply transition animation
-// Param 1: Target theme
-// Param 2: Trigger element (optional, for animation starting point)
-// Param 3: Animation options (optional)
+// 切换主题并应用过渡动画
+// 参数1: 目标主题
+// 参数2: 触发元素 (可选，用于动画起点)
+// 参数3: 动画选项 (可选)
 handleThemeChange("dark", triggerElement, {
   duration: 500,
   easing: "cubic-bezier(0.4, 0, 0.2, 1)",
 });
 ```
 
-#### 6. Custom Themes
+#### 6. 自定义主题
 
-To add a new theme, simply add a new theme configuration to the `$themes` variable in `src/styles/themes/variables.scss`:
+要添加新主题，只需在 `src/styles/themes/variables.scss` 中的 `$themes` 变量中添加新的主题配置：
 
 ```scss
 $themes: (
   light: (
-    /* Light theme variables */
+    /* 亮色主题变量 */
   ),
   dark: (
-    /* Dark theme variables */
+    /* 暗色主题变量 */
   ),
 
-  // Add new theme
+  // 添加新主题
   purple:
     (
       --primary-color: #722ed1,
       --bg-color: #f9f0ff,
       --text-primary: #333333,
-      // Other variables...
+      // 其他变量...
     ),
 );
 ```
 
-### API Requests
+### API 请求
 
-#### 1. Creating API Module
+#### 1. 创建 API 模块
 
-Create a module file in the `src/apis/modules` directory:
+在 `src/apis/modules` 目录下创建模块文件：
 
 ```typescript
 // src/apis/modules/product.ts
@@ -358,7 +378,7 @@ interface ProductParams {
   name: string;
 }
 
-// Get product list
+// 获取产品列表
 export const getProducts = (params: ProductParams) => {
   const requestData: RequestData<ProductParams> = {
     parameter: params,
@@ -367,34 +387,34 @@ export const getProducts = (params: ProductParams) => {
 };
 ```
 
-#### 2. Exporting API Module
+#### 2. 导出 API 模块
 
-Export the new module in `src/apis/index.ts`:
+在 `src/apis/index.ts` 中导出新模块：
 
 ```typescript
 // src/apis/index.ts
 export * as userApi from "./modules/user";
 export * as scriptApi from "./modules/script";
-export * as productApi from "./modules/product"; // New addition
+export * as productApi from "./modules/product"; // 新增
 ```
 
-#### 3. Using API
+#### 3. 使用 API
 
-Use API in components:
+在组件中使用 API：
 
 ```typescript
-// Method 1: Direct import
+// 方式1: 直接导入
 import { getProducts } from "@/apis/modules/product";
 
-// Method 2: Using unified export
+// 方式2: 通过统一导出使用
 import { productApi } from "@/apis";
 
 const fetchData = async () => {
   try {
-    // Method 1
+    // 方式1
     const res1 = await getProducts({ id: "1", name: "test" });
 
-    // Method 2
+    // 方式2
     const res2 = await productApi.getProducts({ id: "1", name: "test" });
 
     console.log(res1, res2);
@@ -404,11 +424,11 @@ const fetchData = async () => {
 };
 ```
 
-### State Management
+### 状态管理
 
-#### 1. Creating Store
+#### 1. 创建 Store
 
-Create a new store in the `src/stores` directory:
+在 `src/stores` 目录下创建新的 store：
 
 ```typescript
 // src/stores/product.ts
@@ -449,7 +469,7 @@ export const useProductStore = defineStore("productStore", {
     async fetchProducts() {
       this.loading = true;
       try {
-        // Use API to get data
+        // 使用API获取数据
         const { data } = await productApi.getProducts({});
         this.setProducts(data);
       } catch (error) {
@@ -460,45 +480,45 @@ export const useProductStore = defineStore("productStore", {
     },
   },
 
-  // Persistence configuration
+  // 持久化配置
   persist: true,
 });
 ```
 
-#### 2. Using Store
+#### 2. 使用 Store
 
-Use store in components:
+在组件中使用 store：
 
 ```typescript
 import { useProductStore } from "@/stores/product";
 
-// Use in setup
+// 在setup中使用
 const productStore = useProductStore();
 
-// Read state
+// 读取状态
 console.log(productStore.products);
 console.log(productStore.totalProducts); // getter
 
-// Modify state
+// 修改状态
 productStore.setProducts([...]);
 productStore.addProduct({ id: "1", name: "Product 1", price: 99 });
 
-// Call async action
+// 调用异步action
 productStore.fetchProducts();
 ```
 
-### Route Management
+### 路由管理
 
-#### 1. Creating Page Component
+#### 1. 创建页面组件
 
-Create page components in the `src/views` directory:
+在 `src/views` 目录下创建页面组件：
 
 ```vue
 <!-- src/views/product/index.vue -->
 <template>
   <div class="product-container">
-    <h1>Product List</h1>
-    <div v-if="loading">Loading...</div>
+    <h1>产品列表</h1>
+    <div v-if="loading">加载中...</div>
     <ul v-else>
       <li v-for="item in products" :key="item.id">
         {{ item.name }} - {{ item.price }}
@@ -532,9 +552,9 @@ onMounted(() => {
 </script>
 ```
 
-#### 2. Creating Route Module
+#### 2. 创建路由模块
 
-Create a route module in the `src/router` directory:
+在 `src/router` 目录下创建路由模块：
 
 ```typescript
 // src/router/product/productRouter.ts
@@ -545,7 +565,7 @@ const productRouter = [
     component: () => import("@/views/product/index.vue"),
     meta: {
       requiresAuth: true,
-      title: "Product List",
+      title: "产品列表",
     },
   },
   {
@@ -554,7 +574,7 @@ const productRouter = [
     component: () => import("@/views/product/detail.vue"),
     meta: {
       requiresAuth: true,
-      title: "Product Detail",
+      title: "产品详情",
     },
   },
 ];
@@ -562,22 +582,22 @@ const productRouter = [
 export default productRouter;
 ```
 
-#### 3. Registering Route Module
+#### 3. 注册路由模块
 
-Import and register the route module in the main route file:
+在主路由文件中引入并注册路由模块：
 
 ```typescript
 // src/router/index.ts
 import { createRouter, createWebHistory } from "vue-router";
 import homeRouter from "./home/homeRouter";
 import loginRouter from "./login/loginRouter";
-import productRouter from "./product/productRouter"; // New addition
+import productRouter from "./product/productRouter"; // 新增
 
 const routes = [
-  // Other routes...
+  // 其他路由...
   ...homeRouter,
   ...loginRouter,
-  ...productRouter, // Register product routes
+  ...productRouter, // 注册产品路由
 ];
 
 const router = createRouter({
@@ -588,17 +608,17 @@ const router = createRouter({
 export default router;
 ```
 
-### Environment Variable Configuration
+### 环境变量配置
 
-The project supports multiple environment configurations. You can create different environment variable files in the root directory:
+项目支持多环境配置，可以在根目录创建不同的环境变量文件：
 
-- `.env` - Variables common to all environments
-- `.env.development` - Development environment variables
-- `.env.production` - Production environment variables
-- `.env.developmentH5` - H5 development environment variables
-- `.env.productionH5` - H5 production environment variables
+- `.env` - 所有环境通用的变量
+- `.env.development` - 开发环境变量
+- `.env.production` - 生产环境变量
+- `.env.developmentH5` - H5 开发环境变量
+- `.env.productionH5` - H5 生产环境变量
 
-Example configuration:
+示例配置：
 
 ```bash
 # .env.development
@@ -608,38 +628,38 @@ VITE_TEST_URL=http://dev-api.example.com
 VITE_PRO_URL=http://api.example.com
 ```
 
-Using environment variables in code:
+在代码中使用环境变量：
 
 ```typescript
-// Using environment variables
+// 使用环境变量
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
-console.log(`Current environment: ${import.meta.env.VITE_NODE_ENV}`);
+console.log(`当前环境: ${import.meta.env.VITE_NODE_ENV}`);
 ```
 
-### Vite Configuration Analysis
+### Vite 配置解析
 
-The project's `vite.config.ts` provides rich functionality configuration:
+项目的 `vite.config.ts` 提供了丰富的功能配置：
 
-#### 1. Auto Import
+#### 1. 自动导入
 
-No need to manually import Vue API and UI component libraries:
+无需手动导入 Vue API 和 UI 组件库：
 
 ```typescript
-// Auto import Vue API, Element Plus, and Vant components
+// 自动导入Vue API、Element Plus和Vant组件
 AutoImport({
-  imports: ["vue"], // Auto import Vue API
+  imports: ["vue"], // 自动导入Vue API
   resolvers: [ElementPlusResolver(), VantResolver()],
 });
 
-// Auto import components
+// 自动导入组件
 Components({
   resolvers: [ElementPlusResolver(), VantResolver()],
 });
 ```
 
-#### 2. Global Style Injection
+#### 2. 全局样式注入
 
-Automatically inject global variables and mixins for each SCSS file:
+自动为每个 SCSS 文件注入全局变量和混入：
 
 ```typescript
 css: {
@@ -655,9 +675,9 @@ css: {
 }
 ```
 
-#### 3. SVG Icon System
+#### 3. SVG 图标系统
 
-Automatically load and optimize SVG icons:
+自动加载和优化 SVG 图标：
 
 ```typescript
 createSvgIconsPlugin({
@@ -666,9 +686,9 @@ createSvgIconsPlugin({
 });
 ```
 
-#### 4. Build Optimization
+#### 4. 构建优化
 
-Intelligent code splitting and compression:
+智能代码分割和压缩：
 
 ```typescript
 build: {
@@ -676,7 +696,7 @@ build: {
   rollupOptions: {
     output: {
       manualChunks(id) {
-        // Extract different dependency libraries to separate files
+        // 不同依赖库提取到独立的文件
         if (id.includes('node_modules')) {
           return id.toString().split('node_modules/')[1].split('/')[0].toString();
         }
@@ -686,9 +706,9 @@ build: {
 }
 ```
 
-#### 5. Path Aliases
+#### 5. 路径别名
 
-Simplify import paths:
+简化导入路径：
 
 ```typescript
 resolve: {
@@ -700,25 +720,25 @@ resolve: {
 }
 ```
 
-## 🧩 Best Practices
+## 🧩 最佳实践
 
-### Component Development Standards
+### 组件开发规范
 
-1. **Component Naming**: Use PascalCase to name components
-2. **Directory Structure**: Complex components use directories containing multiple files
-3. **Props Types**: Always define types for props
-4. **Style Isolation**: Use scoped or module to ensure style isolation
+1. **组件命名**: 使用 PascalCase 命名组件
+2. **目录结构**: 复杂组件使用目录包含多个文件
+3. **Props 类型**: 始终为 props 定义类型
+4. **样式隔离**: 使用 scoped 或 module 确保样式隔离
 
 ```vue
-<!-- Recommended component structure -->
+<!-- 推荐的组件结构 -->
 <template>
   <div class="product-card">
-    <!-- Component content -->
+    <!-- 组件内容 -->
   </div>
 </template>
 
 <script setup lang="ts">
-// Props definition
+// Props定义
 interface Props {
   product: {
     id: string;
@@ -728,12 +748,12 @@ interface Props {
   showDetails?: boolean;
 }
 
-// Default values
+// 默认值
 const props = withDefaults(defineProps<Props>(), {
   showDetails: false,
 });
 
-// Events
+// 事件
 const emit = defineEmits<{
   (e: "select", id: string): void;
   (e: "delete", id: string): void;
@@ -744,32 +764,32 @@ const emit = defineEmits<{
 .product-card {
   @include flex(column, flex-start, stretch);
 
-  // Use theme variables
+  // 使用主题变量
   color: var(--text-primary);
   background-color: var(--bg-color);
 }
 </style>
 ```
 
-### API Development Standards
+### API 开发规范
 
-1. **Modularity**: Organize APIs by business domain
-2. **Type Safety**: Define types for requests and responses
-3. **Comments**: Use JSDoc comments for API functionality and parameters
-4. **Error Handling**: Handle API errors uniformly
+1. **模块化**: 按业务领域组织 API
+2. **类型安全**: 为请求和响应定义类型
+3. **注释**: 使用 JSDoc 注释 API 功能和参数
+4. **错误处理**: 统一处理 API 错误
 
-### State Management Standards
+### 状态管理规范
 
-1. **Store Splitting**: Split Stores by functional modules
-2. **Type Definition**: Define types for State, Getters, and Actions
-3. **Persistence**: Configure persistence options as needed
-4. **Action Reuse**: Reuse other Actions within Actions
+1. **Store 拆分**: 按功能模块拆分 Store
+2. **类型定义**: 为 State、Getters 和 Actions 定义类型
+3. **持久化**: 根据需要配置持久化选项
+4. **Action 复用**: 在 Action 中复用其他 Action
 
-## 📝 License
+## 📝 许可证
 
 [MIT](LICENSE)
 
-## 👨‍💻 Author
+## 👨‍💻 作者
 
 - ZsTs119
 - Email: zsts@foxmail.com
